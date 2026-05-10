@@ -1,15 +1,16 @@
 // app/index.js
+// 1. IMPORTANTE: Pon esto al principio de todo
 import dotenv from 'dotenv';
+dotenv.config(); 
+
+// 2. Después los demás imports
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Cargar variables de entorno
-dotenv.config();
-
-// Importar cliente de Supabase (se configura automáticamente)
+// Importar cliente de Supabase (variables ya están cargadas)
 import { supabase } from "./config/supabase.js";
 
 import express from 'express';
@@ -19,14 +20,12 @@ import cookieParser from 'cookie-parser';
 import { methods as authentication } from "./controllers/authentication.controller.js";
 import { methods as authorization } from "./middlewares/authorization.js";
 
-
 // server
 const app = express();
-const PORT = process.env.PORT || 40000;
-app.set("port", PORT);
+const PORT = process.env.PORT || 10000;
 
-const server = app.listen(PORT, () => {
-  console.log("servidor corriendo en puerto", PORT);
+const server = app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server live on port ${PORT}`);
 });
 
 server.on("error", (err) => {
