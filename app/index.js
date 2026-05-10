@@ -1,22 +1,28 @@
 // app/index.js
-// 1. IMPORTANTE: Pon esto al principio de todo
-import dotenv from 'dotenv';
-dotenv.config(); 
-
-// 2. Después los demás imports
 import path from 'path';
 import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Importar cliente de Supabase (variables ya están cargadas)
-import { supabase } from "./config/supabase.js";
+// Cargar .env ANTES de cualquier otro código
+const envPath = path.resolve(__dirname, '../.env');
+const result = dotenv.config({ path: envPath });
 
+if (result.error) {
+  console.error('❌ Error al cargar .env:', result.error.message);
+  console.error('Ruta buscada:', envPath);
+} else {
+  console.log('✅ .env cargado desde:', envPath);
+}
+
+console.log('DEBUG: SUPABASE_URL después de cargar .env =', process.env.SUPABASE_URL?.substring(0, 30));
+
+// Ahora sí importar todo lo demás
+import { supabase } from "./config/supabase.js";
 import express from 'express';
 import cookieParser from 'cookie-parser';
-
-// Importa controladores y middlewares
 import { methods as authentication } from "./controllers/authentication.controller.js";
 import { methods as authorization } from "./middlewares/authorization.js";
 
