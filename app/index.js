@@ -9,9 +9,8 @@ const __dirname = path.dirname(__filename);
 // Cargar variables de entorno
 dotenv.config();
 
-// Inicializar Supabase después de cargar dotenv
-import { initSupabase } from "./config/supabase.js";
-initSupabase();
+// Importar cliente de Supabase (se configura automáticamente)
+import { supabase } from "./config/supabase.js";
 
 import express from 'express';
 import cookieParser from 'cookie-parser';
