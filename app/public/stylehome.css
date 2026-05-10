@@ -1,0 +1,193 @@
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  color: #333;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: #222;
+  padding: 10px;
+  gap: 10px;
+}
+.navbar a,
+.navbar .logout-link {
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+}
+.navbar .logout-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  margin-left: 8px;
+  filter: brightness(0) invert(1);
+}
+.navbar .logout-link {
+  border: 1px solid transparent;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+.navbar .logout-link:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.3);
+}
+
+/* Contenedor principal */
+.admateria {
+  padding: 20px;
+}
+.materias, .asignaciones {
+  list-style: none;
+  margin: 10px 0;
+}
+.materias li, .asignaciones li {
+  background: #fff;
+  padding: 10px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+}
+
+/* Botón flotante */
+.fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-size: 2rem;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+/* Menú flotante */
+.fab-menu {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+}
+.fab-menu button {
+  background: #fff;
+  border: 1px solid #007bff;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(77, 70, 70, 0.418);
+  justify-content: center;
+  align-items: center;
+
+}
+.modal-content {
+ width: 500px;
+    background-color: rgba(255, 255, 255, 0.123);
+    border: 2px solid #0a6eb149;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px;
+    
+}
+.close {
+  
+  float: right;
+  align-items: center;
+  font-size: 3rem;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .navbar {
+    flex-direction: column;
+    align-items: center;
+  }
+  .fab {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+}
+/* Contenedor principal */
+.containers {
+  background-color: #0a6eb149;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(6, 223, 35, 0.493);
+  max-width: 100%;
+  margin:  auto;
+  display: flex;
+  flex-direction: column;
+  font-size: 18px;
+  gap: 15px; /* Espacio entre elementos */
+}
+
+/* Títulos */
+.formh-title {
+  color: #333;
+  font-family: sans-serif;
+  margin-bottom: 10px;
+}
+
+/* Inputs y Textarea */
+.formh-input, .formh-textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.form-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Botón */
+.form-btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.form-btn:hover {
+  background-color: #45a049;
+}
+
+/* Rejilla opcional para el perfil (2 columnas) */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}

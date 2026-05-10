@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: mi-mochila
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: JWT_SECRET
+        value: mi_clave_extra_secreta
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: JWT_COOKIE_EXPIRES
+        value: 1
+      - key: SUPABASE_URL
+        value: https://ttakczikswzfpiguwjlf.supabase.co
+      - key: SUPABASE_ANON_KEY
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0YWtjemlrc3d6ZnBpZ3V3amxmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNjE3NTEsImV4cCI6MjA5MzkzNzc1MX0.IQ6TfglMNYLgV8fTrGFUH2rokg738UELquC-VZSq_-U

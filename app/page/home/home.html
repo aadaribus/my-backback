@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="/stylehome.css">
+
+</head>
+<body>
+  <!-- Barra de navegación -->
+  <nav class="navbar">
+    <a href="#">Inicio</a>
+    <a href="#">Materias</a>
+    <a href="#">Tareas</a>
+    <a href="#">Perfil</a>
+    <a href="/" class="logout-link">
+      <img src="/cerrar.png" alt="Cerrar sesión" class="logout-icon">
+      
+    </a>
+  </nav>
+
+  <!-- Contenido principal -->
+  <main class="admateria">
+    <h1>Materias</h1>
+    <ul class="materias">
+      <li>Materia 1</li>
+      <li>Materia 2</li>
+      <li>Materia 3</li>
+      <li>Materia 4</li>
+    </ul>
+    <h2>Tareas</h2>
+    <ul class="asignaciones">
+      <li>Tarea 1</li>
+      <li>Tarea 2</li>
+    </ul>
+  </main>
+
+  <!-- Botón flotante -->
+  <button class="fab" id="fab">+</button>
+
+  <!-- Menú desplegable -->
+  <div class="fab-menu" id="fabMenu">
+    <button data-form="materia">Agregar Materia</button>
+    <button data-form="perfil">Editar Perfil</button>
+    <button data-form="apunte">Apuntes Rápidos</button>
+    <button data-form="grupo">Grupos</button>
+    <button data-form="evento">Eventos</button>
+  </div>
+
+  <!-- Formularios flotantes -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <span class="close" id="close">&times;</span>
+      <form id="formContent">
+        <!-- Aquí se inyecta el formulario según la opción -->
+      </form>
+    </div>
+  </div>
+
+  <script src="/home.js"></script>
+</body>
+</html>

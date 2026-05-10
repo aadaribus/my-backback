@@ -1,0 +1,75 @@
+html {
+  --s: 182px; /* control the size*/
+  --c1: #5e3a22;
+  --c2: #ffffff;
+  
+  --_g: #0000 90deg,var(--c1) 0;
+  background: 
+    conic-gradient(from 90deg at 2px 2px,var(--_g)),
+    conic-gradient(from 90deg at 1px 1px,var(--_g)),
+    var(--c2);
+  background-size: var(--s) var(--s), calc(var(--s)/5) calc(var(--s)/5);
+}
+
+
+body {
+        margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100svh;
+    font-size: large;
+
+}
+
+.form-container{
+    width: 500px;
+    background-color: white;
+    border: 2px solid hwb(241 8% 14% / 0.281);
+    border-radius: 10px;
+    padding: 50px;
+}
+
+form{
+display: flex;
+flex-direction: column;
+gap: 10px;
+
+}
+form+p, form p{
+    text-align: center;
+}
+
+input, button{
+    border-radius: 4px;
+    border: unset;
+    padding: 15px 30px;
+    font-size: large;
+}
+
+button{
+    background-color: #5e3a22;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.error{
+color: red;
+}
+
+.escondido{
+    display: none;
+}
+
+.sr-only {
+    position: absolute;
+    left: -10000px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
