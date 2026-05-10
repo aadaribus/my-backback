@@ -6,18 +6,20 @@ import dotenv from 'dotenv';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Cargar .env ANTES de cualquier otro código
-const envPath = path.resolve(__dirname, '../.env');
-const result = dotenv.config({ path: envPath });
+// Cargar .env SOLO en desarrollo (Render inyecta variables automáticamente)
+if (process.env.NODE_ENV !== 'production') {
+  const envPath = path.resolve(__dirname, '../.env');
+  const result = dotenv.config({ path: envPath });
 
-if (result.error) {
-  console.error('❌ Error al cargar .env:', result.error.message);
-  console.error('Ruta buscada:', envPath);
-} else {
-  console.log('✅ .env cargado desde:', envPath);
+  if (result.error) {
+    console.error('❌ Error al cargar .env:', result.error.message);
+    console.error('Ruta buscada:', envPath);
+  } else {
+    console.log('✅ .env cargado desde:', envPath);
+  }
+
+  console.log('DEBUG: SUPABASE_URL después de cargar .env =', process.env.SUPABASE_URL?.substring(0, 30));
 }
-
-console.log('DEBUG: SUPABASE_URL después de cargar .env =', process.env.SUPABASE_URL?.substring(0, 30));
 
 // Ahora sí importar todo lo demás
 import { supabase } from "./config/supabase.js";
