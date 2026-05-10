@@ -6,6 +6,9 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Cargar variables de entorno
+dotenv.config();
+
 // Inicializar Supabase después de cargar dotenv
 import { initSupabase } from "./config/supabase.js";
 initSupabase();
