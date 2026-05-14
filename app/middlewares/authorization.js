@@ -1,15 +1,16 @@
 import JsonWebToken from "jsonwebtoken";
 
 function soloAdmin(req, res, next) {
-  const logueado = revisarcookie(req);
-  if (!logueado) return res.redirect("/");
+  const usuario = revisarcookie(req);
+  if (!usuario) return res.redirect("/"); // no logueado
+  if (usuario.role !== "admin") return res.status(403).send("Acceso denegado");
   return next();
 }
 
 function soloUsuario(req, res, next) {
-  const logueado = revisarcookie(req);
-  if (!logueado) return next();
-  return res.redirect("/home");
+  const usuario = revisarcookie(req);
+  if (!usuario) return next(); // no logueado, puede ver login/register
+  return res.redirect("/home"); // si ya está logueado, redirige a home
 }
 
 function revisarcookie(req) {
@@ -24,8 +25,9 @@ function revisarcookie(req) {
     if (!token) return false;
 
     const decodificada = JsonWebToken.verify(token, process.env.JWT_SECRET);
-    return decodificada;
+    return decodificada; // contiene { id, username, email, role }
   } catch (error) {
+    console.error("Error verificando cookie:", error.message);
     return false;
   }
 }
