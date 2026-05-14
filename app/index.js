@@ -58,7 +58,14 @@ app.get("/register", authorization.soloUsuario, (req, res) =>
   res.sendFile(__dirname + "/page/register.html")
 );
 
-app.get("/home", authorization.soloAdmin, (req, res) =>
+// 🔑 Aquí decides si solo admin entra o cualquier usuario logueado
+// Opción 1: solo admin
+// app.get("/home", authorization.soloAdmin, (req, res) =>
+//   res.sendFile(__dirname + "/page/home/home.html")
+// );
+
+// Opción 2: cualquier usuario logueado
+app.get("/home", authorization.soloLogueado, (req, res) =>
   res.sendFile(__dirname + "/page/home/home.html")
 );
 
@@ -69,7 +76,7 @@ app.post("/api/login", authentication.login);
 app.get("/ping-supabase", async (req, res) => {
   try {
     const { data, error } = await supabase
-      .from("users") // tu tabla real en Supabase
+      .from("users")
       .select("*")
       .limit(1);
 
