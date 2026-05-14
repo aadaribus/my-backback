@@ -6,6 +6,8 @@ services:
     buildCommand: npm install
     startCommand: npm start
     envVars:
+      - key: NODE_ENV
+        value: production
       - key: JWT_SECRET
         value: mi_clave_extra_secreta
       - key: JWT_EXPIRES_IN

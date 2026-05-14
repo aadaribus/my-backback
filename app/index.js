@@ -21,7 +21,7 @@ if (process.env.NODE_ENV !== 'production') {
   console.log('DEBUG: SUPABASE_URL después de cargar .env =', process.env.SUPABASE_URL?.substring(0, 30));
 }
 
-// Ahora sí importar todo lo demás
+// Importar cliente de Supabase
 import { supabase } from "./config/supabase.js";
 import express from 'express';
 import cookieParser from 'cookie-parser';
@@ -33,7 +33,7 @@ const app = express();
 const PORT = process.env.PORT || 10000;
 
 const server = app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server live on port ${PORT}`);
+  console.log(`✅ Server live on port ${PORT}`);
 });
 
 server.on("error", (err) => {
@@ -49,7 +49,7 @@ app.use(express.static(__dirname + "/public"));
 app.use(express.json());
 app.use(cookieParser());
 
-// rutas
+// rutas principales
 app.get("/", authorization.soloUsuario, (req, res) =>
   res.sendFile(__dirname + "/page/login.html")
 );
@@ -64,3 +64,21 @@ app.get("/home", authorization.soloAdmin, (req, res) =>
 
 app.post("/api/register", authentication.register);
 app.post("/api/login", authentication.login);
+
+// 🚀 Endpoint de prueba para conexión con Supabase
+app.get("/ping-supabase", async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("users") // tu tabla real en Supabase
+      .select("*")
+      .limit(1);
+
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+
+    res.json({ message: "✅ Conexión exitosa con Supabase", data });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
