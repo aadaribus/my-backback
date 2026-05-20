@@ -19,6 +19,13 @@ async function login(req, res) {
   }
 
   try {
+    // Verificar que JWT_SECRET esté configurado
+    if (!process.env.JWT_SECRET) {
+      console.error("[ERROR LOGIN] JWT_SECRET no está configurado");
+      return res.status(500).send({ error: { message: "Error de configuración del servidor" } });
+    }
+
+    console.log("[LOGIN] Buscando usuario:", username);
     const { data: user, error } = await supabase
       .from("users")
       .select("*")
@@ -30,32 +37,36 @@ async function login(req, res) {
       return res.status(400).send({ error: { message: "Usuario o contraseña incorrectos" } });
     }
 
+    console.log("[LOGIN] Usuario encontrado, verificando contraseña");
     const loginCorrecto = await bcryptjs.compare(password, user.password);
     if (!loginCorrecto) {
       console.warn("[⚠️ INTENTO FALLIDO] Contraseña incorrecta para:", username);
       return res.status(400).send({ error: { message: "Usuario o contraseña incorrectos" } });
     }
 
+    console.log("[LOGIN] Generando JWT...");
     const token = jsonwebtoken.sign(
       { id: user.id, username: user.username, email: user.email, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN }
+      { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
     );
 
     console.log("[✅ LOGIN EXITOSO]", username, new Date().toISOString());
 
+    const cookieExpireDays = parseInt(process.env.JWT_COOKIE_EXPIRES) || 1;
     res.cookie("jwt", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES * 24 * 60 * 60 * 1000),
+      expires: new Date(Date.now() + cookieExpireDays * 24 * 60 * 60 * 1000),
       path: "/"
     });
 
     res.send({ status: "ok", message: "Login correcto", redirect: "/home" });
   } catch (error) {
-    console.error("[ERROR SERVIDOR]", error);
-    res.status(500).send({ error: { message: "Error en el servidor" } });
+    console.error("[❌ ERROR SERVIDOR EN LOGIN]", error.message);
+    console.error("[STACK]", error.stack);
+    res.status(500).send({ error: { message: `Error en el servidor: ${error.message}` } });
   }
 }
 

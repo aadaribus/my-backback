@@ -27,11 +27,25 @@ closeBtn.addEventListener('click', () => {
 // Cerrar sesión al hacer clic en la imagen de logout
 const logoutLink = document.querySelector('.logout-link');
 if (logoutLink) {
-  logoutLink.addEventListener('click', (event) => {
+  logoutLink.addEventListener('click', async (event) => {
     event.preventDefault();
-    document.cookie = 'jwt=; path=/; max-age=0';
-    document.cookie = 'jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    window.location.href = '/';
+    try {
+      const response = await fetch('/api/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        // Redirigir a login después de cerrar sesión exitosamente
+        window.location.href = '/';
+      } else {
+        console.error('Error al cerrar sesión');
+      }
+    } catch (error) {
+      console.error('Error en logout:', error);
+    }
   });
 }
 

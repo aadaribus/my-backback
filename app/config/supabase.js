@@ -6,7 +6,9 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Cargar .env manualmente con mejor parsing para valores con '='
+console.log('🔧 Iniciando carga de variables de Supabase...');
+
+// Paso 1: Intentar cargar .env si está en desarrollo
 const envPath = path.resolve(__dirname, '../../.env');
 if (fs.existsSync(envPath)) {
   console.log('✅ Archivo .env encontrado en:', envPath);
@@ -18,7 +20,7 @@ if (fs.existsSync(envPath)) {
       if (indexOfEquals > 0) {
         const key = trimmedLine.substring(0, indexOfEquals).trim();
         const value = trimmedLine.substring(indexOfEquals + 1).trim();
-        if (key && value) {
+        if (key && value && !process.env[key]) {
           process.env[key] = value;
         }
       }
@@ -26,11 +28,10 @@ if (fs.existsSync(envPath)) {
   });
   console.log('✅ Variables .env cargadas correctamente');
 } else {
-  console.warn('⚠️ Archivo .env NO encontrado en:', envPath);
-  console.log('Variables del sistema:', Object.keys(process.env).filter(k => k.includes('SUPABASE')));
+  console.log('⚠️ Archivo .env NO encontrado (normal en Render/producción)');
 }
 
-// Obtenemos las variables
+// Paso 2: Obtenemos las variables (del .env o del sistema)
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
@@ -45,9 +46,11 @@ console.log('=========================================\n');
 // Validar antes de crear el cliente
 if (!supabaseUrl || !supabaseKey) {
   console.error('❌ ERROR CRÍTICO: Variables de Supabase no están definidas');
-  console.error('Por favor verifica que el archivo .env tenga:');
-  console.error('  - SUPABASE_URL=https://tu-proyecto.supabase.co');
-  console.error('  - SUPABASE_ANON_KEY=tu_clave_anonima');
+  console.error('Por favor verifica que hayas configurado:');
+  console.error('  - SUPABASE_URL');
+  console.error('  - SUPABASE_ANON_KEY');
+  console.error('\nEn desarrollo: crea .env con estas variables');
+  console.error('En Render: configúralas en Settings > Environment');
   process.exit(1);
 }
 

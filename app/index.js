@@ -2,6 +2,7 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,9 +18,54 @@ if (process.env.NODE_ENV !== 'production') {
   } else {
     console.log('✅ .env cargado desde:', envPath);
   }
-
-  console.log('DEBUG: SUPABASE_URL después de cargar .env =', process.env.SUPABASE_URL?.substring(0, 30));
+} else {
+  // En producción, intentar cargar .env si existe (para Render)
+  const envPath = path.resolve(__dirname, '../.env');
+  if (fs.existsSync(envPath)) {
+    console.log('ℹ️ Cargando .env en producción desde:', envPath);
+    const envContent = fs.readFileSync(envPath, 'utf-8');
+    envContent.split('\n').forEach(line => {
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith('#')) {
+        const indexOfEquals = trimmed.indexOf('=');
+        if (indexOfEquals > 0) {
+          const key = trimmed.substring(0, indexOfEquals).trim();
+          const value = trimmed.substring(indexOfEquals + 1).trim();
+          if (key && value && !process.env[key]) {
+            process.env[key] = value;
+          }
+        }
+      }
+    });
+  }
 }
+
+// Validar variables críticas
+console.log('\n========== VALIDACIÓN DE VARIABLES ==========');
+const requiredVars = ['JWT_SECRET', 'SUPABASE_URL', 'SUPABASE_ANON_KEY'];
+const missingVars = [];
+
+requiredVars.forEach(varName => {
+  const value = process.env[varName];
+  if (value) {
+    console.log(`✅ ${varName}: Configurada`);
+  } else {
+    console.error(`❌ ${varName}: NO CONFIGURADA`);
+    missingVars.push(varName);
+  }
+});
+
+if (missingVars.length > 0) {
+  console.error('\n⚠️ Variables faltantes:', missingVars.join(', '));
+  console.error('\nEn desarrollo: Crea archivo .env con:');
+  console.error('  JWT_SECRET=tu_clave_secreta');
+  console.error('  JWT_EXPIRES_IN=7d');
+  console.error('  JWT_COOKIE_EXPIRES=1');
+  console.error('  SUPABASE_URL=tu_url');
+  console.error('  SUPABASE_ANON_KEY=tu_clave');
+  console.error('\nEn Render: Configúralas en Settings > Environment');
+}
+console.log('==============================================\n');
 
 // Importar cliente de Supabase
 import { supabase } from "./config/supabase.js";
@@ -103,6 +149,10 @@ app.get("/home", authorization.soloLogueado, (req, res) =>
 
 app.post("/api/register", authentication.register);
 app.post("/api/login", authentication.login);
+app.post("/api/logout", (req, res) => {
+  res.clearCookie("jwt", { path: "/" });
+  res.json({ status: "ok", message: "Sesión cerrada correctamente" });
+});
 
 // 🚀 Endpoint de prueba para conexión con Supabase
 app.get("/ping-supabase", async (req, res) => {
