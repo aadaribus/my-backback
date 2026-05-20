@@ -4,8 +4,14 @@ import { supabase } from "../config/supabase.js";
 
 console.log("✅ authentication.controller.js cargado correctamente");
 
+// Validación de email
+const validateEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
 async function login(req, res) {
-  console.log(req.body);
+  console.log("[LOGIN] Solicitud recibida:", new Date().toISOString());
   const { username, password } = req.body;
 
   if (!username || !password) {
@@ -20,20 +26,23 @@ async function login(req, res) {
       .single();
 
     if (error || !user) {
-      console.error("Error Supabase login:", error?.message);
+      console.error("[ERROR LOGIN] Usuario no encontrado:", error?.message);
       return res.status(400).send({ error: { message: "Usuario o contraseña incorrectos" } });
     }
 
     const loginCorrecto = await bcryptjs.compare(password, user.password);
     if (!loginCorrecto) {
+      console.warn("[⚠️ INTENTO FALLIDO] Contraseña incorrecta para:", username);
       return res.status(400).send({ error: { message: "Usuario o contraseña incorrectos" } });
     }
 
     const token = jsonwebtoken.sign(
-      { id: user.id, username: user.username, email: user.email },
+      { id: user.id, username: user.username, email: user.email, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN }
     );
+
+    console.log("[✅ LOGIN EXITOSO]", username, new Date().toISOString());
 
     res.cookie("jwt", token, {
       httpOnly: true,
@@ -45,17 +54,22 @@ async function login(req, res) {
 
     res.send({ status: "ok", message: "Login correcto", redirect: "/home" });
   } catch (error) {
-    console.error("Error en login:", error);
+    console.error("[ERROR SERVIDOR]", error);
     res.status(500).send({ error: { message: "Error en el servidor" } });
   }
 }
 
 async function register(req, res) {
-  console.log(req.body);
+  console.log("[REGISTER] Solicitud recibida:", new Date().toISOString());
   const { username, email, password } = req.body;
 
   if (!username || !email || !password) {
     return res.status(400).send({ error: { message: "Favor llenar los campos requeridos" } });
+  }
+
+  // Validar formato de email
+  if (!validateEmail(email)) {
+    return res.status(400).send({ error: { message: "Formato de email inválido" } });
   }
 
   try {
@@ -75,23 +89,40 @@ async function register(req, res) {
 
     const { data: nuevoUsuario, error: errorInsert } = await supabase
       .from("users")
-      .insert([{ username, email, password: hashPassword }])
+      .insert([{ 
+        username, 
+        email, 
+        password: hashPassword,
+        role: 'user' // Asignar rol por defecto - coincide con tabla Supabase
+      }])
       .select()
       .single();
 
     if (errorInsert) {
-      console.error("Error al registrar usuario:", errorInsert.message);
+      console.error("[ERROR REGISTRO]", new Date().toISOString(), "-", errorInsert.message);
       return res.status(400).send({ error: { message: "Error al registrar usuario" } });
     }
 
-    console.log("Usuario registrado:", nuevoUsuario);
+    console.log("[✅ USUARIO REGISTRADO]", new Date().toISOString());
+    console.log("  - Username:", nuevoUsuario.username);
+    console.log("  - Email:", nuevoUsuario.email);
+    console.log("  - Rol:", nuevoUsuario.role);
+    console.log("  - Creado en:", nuevoUsuario.created_at);
+    
     return res.status(201).send({
       status: "ok",
       message: `Usuario ${nuevoUsuario.username} registrado correctamente`,
+      user: {
+        id: nuevoUsuario.id,
+        username: nuevoUsuario.username,
+        email: nuevoUsuario.email,
+        role: nuevoUsuario.role,
+        created_at: nuevoUsuario.created_at
+      },
       redirect: "/"
     });
   } catch (error) {
-    console.error("Error en register:", error);
+    console.error("[ERROR SERVIDOR]", error);
     res.status(500).send({ error: { message: "Error en el servidor" } });
   }
 }
