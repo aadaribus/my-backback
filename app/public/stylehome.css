@@ -46,23 +46,6 @@ body {
   border-color: rgba(255,255,255,0.3);
 }
 
-/* Contenedor principal */
-.admateria {
-  padding: 20px;
-}
-/* Contenedor Principal con posicionamiento relativo para el botón de cierre */
-.asignature {
-  position: relative;
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  padding: 24px;
-  max-width: 500px;
-  margin: 20px auto;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
 .signature-header h3 {
   margin-top: 0;
   margin-bottom: 16px;
@@ -234,6 +217,61 @@ body {
   margin: 0;
 }
 
+  /* inicia materias */
+ .admateria {
+  font-size: 20px;
+  background-color: #517cf240;
+  
+  /* 1. Posicionamiento a la izquierda */
+  float: left; /* Hace que se aloje a la izquierda del espacio disponible */
+  
+  /* 2. Dimensiones fijas (Ajusta los píxeles según lo que necesites) */
+  width: 100%; /* Anchura fija */
+  height: auto; /* Altura fija */
+  
+  /* 3. Control del contenido interno */
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  box-sizing: border-box; /* Incluye el padding y bordes dentro del tamaño total */
+  padding: 20px; /* Espacio interno para que el contenido no toque los bordes */
+  
+  /* 4. Evitar desbordamiento si el contenido es muy largo */
+  overflow-y: auto; /* Añade barra de desplazamiento vertical solo si es necesario */
+}
+
+/* Limpiador de flotado (Añade esto justo después de tu formulario en el HTML para evitar errores de diseño) */
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.asignature {
+  font-size: 15px;
+  background-color: #f6f7f8;
+  /* 1. Posicionamiento a la derecha */
+  float: none; /* Hace que se aloje a la derecha del espacio disponible */
+  
+  /* 2. Dimensiones fijas (Ajusta los píxeles según lo que necesites) */
+  width: 100%; /* Anchura fija */
+  height: auto; /* Altura fija */
+  
+  /* 3. Control del contenido interno */
+  display: flex;
+  flex-direction: column; /* Organiza el contenido en vertical (arriba a abajo) */
+  box-sizing: border-box; /* Incluye el padding y bordes dentro del tamaño total */
+  padding: 10px; /* Espacio interno para que el contenido no toque los bordes */
+  
+  /* 4. Evitar desbordamiento si el contenido es muy largo */
+  overflow-y: auto; /* Añade barra de desplazamiento vertical solo si es necesario */
+  align-items: center; /* Centra el contenido horizontalmente */
+}
+
+
+/*fin de materia/*
+
+
 /* Responsive */
 @media (max-width: 600px) {
   .navbar {
@@ -256,106 +294,6 @@ body {
   
   .navbar a {
     font-size: 14px;
-  }
-  
-  .admateria {
-    padding: 15px;
-  }
-  
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .fab {
-    width: 55px;
-    height: 55px;
-    font-size: 28px;
-    bottom: 15px;
-    right: 15px;
-  }
-}
-
-/* Móviles */
-@media (max-width: 480px) {
-  body {
-    font-size: 14px;
-  }
-  
-  .navbar {
-    flex-direction: row;
-    flex-wrap: wrap;
-    padding: 5px;
-    gap: 0;
-  }
-  
-  .navbar a {
-    font-size: 12px;
-    padding: 5px 8px;
-    flex: 1;
-    text-align: center;
-  }
-  
-  .navbar .logout-icon {
-    width: 20px;
-    height: 20px;
-    margin-left: 4px;
-  }
-  
-  .admateria {
-    padding: 10px;
-  }
-  
-  .admateria h1 {
-    font-size: 20px;
-  }
-  
-  .admateria h2 {
-    font-size: 16px;
-    margin-top: 15px;
-  }
-  
-   .fab {
-    width: 50px;
-    height: 50px;
-    font-size: 24px;
-    bottom: 10px;
-    right: 10px;
-  }
-  
-  .fab-menu {
-    bottom: 70px;
-    right: 10px;
-  }
-  
-  .fab-menu button {
-    padding: 8px;
-    font-size: 12px;
-  }
-  
-  .modal-content {
-    width: 95%;
-    max-width: 100%;
-    padding: 15px;
-    margin: 5px;
-  }
-  
-  .containers {
-    padding: 15px;
-    font-size: 14px;
-  }
-  
-  .formh-input, .formh-textarea {
-    padding: 8px;
-    font-size: 13px;
-  }
-  
-  .form-btn {
-    padding: 10px;
-    font-size: 14px;
-  }
-  
-  .form-grid {
-    grid-template-columns: 1fr;
   }
 }
 /* Contenedor principal */
