@@ -34,7 +34,7 @@ async function login(req, res) {
 
     if (error || !user) {
       console.error("[ERROR LOGIN] Usuario no encontrado:", error?.message);
-      return res.status(400).send({ error: { message: "Usuario o contraseña incorrectos" } });
+      return res.status(400).send({ error: { message: "Imposible iniciar sesión en tu cuenta" } });
     }
 
     console.log("[LOGIN] Usuario encontrado, verificando contraseña");
@@ -92,7 +92,7 @@ async function register(req, res) {
       .maybeSingle();
 
     if (existingUser) {
-      return res.status(400).send({ error: { message: "El usuario o email ya existe" } });
+      return res.status(400).send({ error: { message: "Datos de registros existentes" } });
     }
 
     const salt = await bcryptjs.genSalt(10);

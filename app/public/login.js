@@ -2,6 +2,17 @@
 const form = document.getElementById("login-form");
 const mensajeError = document.querySelector(".error");
 
+// Limpiar formulario al cargar la página
+function limpiarFormulario() {
+  form.reset();
+  if (mensajeError) {
+    mensajeError.classList.add("escondido");
+  }
+}
+
+// Ejecutar limpiar formulario cuando la página carga
+document.addEventListener("DOMContentLoaded", limpiarFormulario);
+
 // Manejar envío del formulario
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
