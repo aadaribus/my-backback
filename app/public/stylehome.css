@@ -50,18 +50,128 @@ body {
 .admateria {
   padding: 20px;
 }
-.materias, .asignaciones {
-  list-style: none;
-  margin: 10px 0;
-}
-.materias li, .asignaciones li {
-  background: #fff;
-  padding: 10px;
-  margin-bottom: 5px;
-  border-radius: 5px;
+/* Contenedor Principal con posicionamiento relativo para el botón de cierre */
+.asignature {
+  position: relative;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 500px;
+  margin: 20px auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* Botón flotante */
+.signature-header h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: #333333;
+}
+
+/* Icono Superior Derecho de Cerrar */
+.close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #888888;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.close-btn:hover {
+  color: #333333;
+  transform: scale(1.1);
+}
+
+/* Lista de Herramientas Multimedia */
+.media-actions-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px 0;
+}
+
+.media-actions-list button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f8f9fa;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #4a5568;
+  transition: all 0.2s ease;
+}
+
+.media-actions-list button:hover {
+  background-color: #edf2f7;
+  border-color: #cbd5e1;
+}
+
+/* Colores de los Iconos */
+.fa-file-alt { color: #3b82f6; } /* Azul */
+.fa-image { color: #10b981; }    /* Verde */
+.fa-video { color: #ef4444; }    /* Rojo */
+.fa-microphone { color: #f59e0b; } /* Amarillo */
+
+/* Bloque Inferior de Acciones (Botones Guardar / Cancelar) */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  border-top: 1px solid #edf2f7;
+  padding-top: 16px;
+}
+
+.form-actions button {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+/* Botón Cancelar */
+.btn-cancel {
+  background: none;
+  border: 1px solid #cbd5e1;
+  color: #64748b;
+}
+
+.btn-cancel:hover {
+  background-color: #f8f9fa;
+  color: #334155;
+}
+
+/* Botón Guardar */
+.btn-save {
+  background-color: #2563eb;
+  border: 1px solid #2563eb;
+  color: #ffffff;
+}
+
+.btn-save:hover {
+  background-color: #1d4ed8;
+}
+
+
+
+
+  /* Botón flotante */
 .fab {
   position: fixed;
   bottom: 20px;
@@ -204,13 +314,7 @@ body {
     margin-top: 15px;
   }
   
-  .materias li, .asignaciones li {
-    padding: 8px;
-    margin-bottom: 4px;
-    font-size: 14px;
-  }
-  
-  .fab {
+   .fab {
     width: 50px;
     height: 50px;
     font-size: 24px;
