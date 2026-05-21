@@ -41,5 +41,6 @@ function revisarcookie(req) {
 export const methods = {
   soloAdmin,
   soloUsuario,
-  soloLogueado
+  soloLogueado,
+  revisarcookie
 };

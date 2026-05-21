@@ -2,24 +2,58 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <meta name="description" content="Crea tu cuenta nueva">
+  <meta name="theme-color" content="#5e3a22">
   <title>Registrar</title>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <main>
+  <main role="main">
     <div class="form-container">
       <h1>Crear cuenta</h1>
       <p>Formulario de registro</p>
-      <form id="register-form">
-        <label class="sr-only" for="user">Usuario</label>
-        <input type="text" id="user" name="username" placeholder="Nombre de usuario" required>
+      <form id="register-form" method="POST" novalidate>
+        <div>
+          <label class="sr-only" for="user">Usuario</label>
+          <input 
+            type="text" 
+            id="user" 
+            name="username" 
+            placeholder="Nombre de usuario" 
+            required
+            autocomplete="username"
+            aria-label="Nombre de usuario"
+            minlength="3"
+          >
+        </div>
 
-        <label class="sr-only" for="email">Correo electrónico</label>
-        <input type="email" id="email" name="email" placeholder="Correo electrónico" required>
+        <div>
+          <label class="sr-only" for="email">Correo electrónico</label>
+          <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            placeholder="Correo electrónico" 
+            required
+            autocomplete="email"
+            aria-label="Correo electrónico"
+          >
+        </div>
 
-        <label class="sr-only" for="password">Contraseña</label>
-        <input type="password" id="password" name="password" placeholder="Contraseña" required>
+        <div>
+          <label class="sr-only" for="password">Contraseña</label>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            placeholder="Contraseña" 
+            required
+            autocomplete="new-password"
+            aria-label="Contraseña"
+            minlength="6"
+          >
+        </div>
 
         <!-- Opcional: campo de rol -->
         <!--
@@ -30,10 +64,10 @@
         </select>
         -->
 
-        <button type="submit">Crear cuenta</button>
-        <p class="error escondido">Error al crear la cuenta</p>
+        <button type="submit" aria-label="Crear cuenta">Crear cuenta</button>
+        <p class="error escondido" role="alert" aria-live="polite">Error al crear la cuenta</p>
       </form>
-      <p>¿Ya tienes una cuenta? <a href="/">Iniciar sesión</a></p>
+      <p>¿Ya tienes una cuenta? <a href="/" aria-label="Ir a página de inicio de sesión">Iniciar sesión</a></p>
     </div>
   </main>
   <script src="/register.js" defer></script>

@@ -2,91 +2,84 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="description" content="Página principal de tu mochila digital">
+    <meta name="theme-color" content="#222">
+    <title>Inicio - Mi Mochila</title>
     <link rel="stylesheet" href="/stylehome.css">
-    <link rel="stylesheet" href="https://cloudflare.com">
-
 </head>
 <body>
   <!-- Barra de navegación -->
-  <nav class="navbar">
-    <a href="#">Inicio</a>
-    <a href="#">Materias</a>
-    <a href="#">Tareas</a>
-    <a href="#">Perfil</a>
-    <a href="/" class="logout-link">
-      <img src="/assets/cerrar.png" alt="Cerrar sesión" class="logout-icon">
-      
+  <nav class="navbar" role="navigation" aria-label="Navegación principal">
+   <!-- <a href="#" aria-label="Ir a inicio">Inicio</a> -->
+   <!-- <a href="#" aria-label="Ver materias">Materias</a> -->
+    <a href="#" aria-label="Ver tareas">Tareas</a>
+    <a href="#" aria-label="Ver perfil">Perfil</a>
+    <span class="user-info" id="user-info" aria-label="Información del usuario">
+      <span class="user-name" id="user-name">Usuario</span>
+    </span>
+    <a href="/" class="logout-link" aria-label="Cerrar sesión">
+      <img src="/assets/cerrar.png" alt="Cerrar sesión" class="logout-icon" loading="lazy">
     </a>
   </nav>
 
   <!-- Contenido principal -->
-  <form class="admateria">
-<!-- Contenedor Principal -->
-  <div class="asignature">
-  
-  <!-- Icono superior derecho para cerrar -->
-  <button type="button" class="close-btn" title="Cerrar" aria-label="Cerrar">
-    <i class="fas fa-times"></i>
-  </button>
+  <main role="main" class="main-content">
+    <section class="admateria" aria-label="Materias">
+      <!-- Contenedor Principal -->
+      <div class="asignature">
+        <!-- Área de contenido o título -->
+        <div class="signature-header">
+          <h2>Asignatura</h2>
+        </div>
 
-  <!-- Área de contenido o título (opcional, para dar contexto) -->
-  <div class="signature-header">
-    <h3>Asignatura</h3>
-  </div>
+        <!-- Contenedor de la lista de herramientas multimedia -->
+        <ul class="media-actions-list" aria-label="Herramientas multimedia">
+          <li>
+            <a href="#" aria-label="Agregar texto">
+              <img src="/assets/adtex.png" alt="Texto" class="btn-custom-icon" loading="lazy"> 
+              <span></span>
+            </a>
+          </li>
+          <li>
+            <a href="#" aria-label="Agregar imagen">
+              <img src="/assets/cam.png" alt="Imagen" class="btn-custom-icon" loading="lazy"> 
+              <span></span>
+            </a>
+          </li>
+          <li>
+            <a href="#" aria-label="Agregar video">
+              <img src="/assets/video.png" alt="Video" class="btn-custom-icon" loading="lazy"> 
+              <span></span>
+            </a>
+          </li>
+          <li>
+            <a href="#" aria-label="Agregar audio">
+              <img src="/assets/micro.png" alt="Audio" class="btn-custom-icon" loading="lazy"> 
+              <span></span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </section>
+  </main>
 
-  <!-- Contenedor de la lista de herramientas multimedia -->
-  <ul class="media-actions-list">
-    <li>
-      <button type="button" title="Agregar texto.">
-        <i class="fas fa-file-alt"></i> <span>Texto</span>
-      </button>
-    </li>
-    <li>
-      <button type="button" title="Agregar foto">
-        <i class="fas fa-image"></i> <span>Foto</span>
-      </button>
-    </li>
-    <li>
-      <button type="button" title="Agregar video">
-        <i class="fas fa-video"></i> <span>Video</span>
-      </button>
-    </li>
-    <li>
-      <button type="button" title="Agregar audio">
-        <i class="fas fa-microphone"></i> <span>Audio</span>
-      </button>
-    </li>
-  </ul>
-
-  <!-- Bloque inferior de acciones (Guardar y Cancelar) -->
-  <div class="form-actions">
-    <button type="button" class="btn-cancel">Cancelar</button>
-    <button type="submit" class="btn-save">Guardar</button>
-  </div>
-
-</div>
-
-
-  </form>
-
-  <!-- Botón flotante -->
-  <button class="fab" id="fab">+</button>
+  <!-- Botón flotante para agregar contenido -->
+  <button class="fab" id="fab" aria-label="Menú de opciones" aria-expanded="false" aria-controls="fabMenu">+</button>
 
   <!-- Menú desplegable -->
-  <div class="fab-menu" id="fabMenu">
-    <button data-form="materia">Agregar Materia</button>
-    <button data-form="perfil">Editar Perfil</button>
-    <button data-form="apunte">Apuntes Rápidos</button>
-    <button data-form="grupo">Grupos</button>
-    <button data-form="evento">Eventos</button>
+  <div class="fab-menu" id="fabMenu" role="menu" aria-label="Opciones de menú">
+    <button data-form="materia" role="menuitem">Agregar Materia</button>
+    <button data-form="perfil" role="menuitem">Editar Perfil</button>
+    <button data-form="apunte" role="menuitem">Apuntes Rápidos</button>
+    <button data-form="grupo" role="menuitem">Grupos</button>
+    <button data-form="evento" role="menuitem">Eventos</button>
   </div>
 
-  <!-- Formularios flotantes -->
-  <div class="modal" id="modal">
+  <!-- Formularios flotantes Modal -->
+  <div class="modal" id="modal" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
     <div class="modal-content">
-      <span class="close" id="close">&times;</span>
+      <button class="close" id="close" aria-label="Cerrar modal">&times;</button>
       <form id="formContent">
         <!-- Aquí se inyecta el formulario según la opción -->
       </form>
