@@ -1,4 +1,4 @@
-// Obtener formulario
+// Obtener elementos del formulario
 const form = document.getElementById("login-form");
 const mensajeError = document.querySelector(".error");
 
@@ -13,11 +13,17 @@ function limpiarFormulario() {
 // Ejecutar limpiar formulario cuando la página carga
 document.addEventListener("DOMContentLoaded", limpiarFormulario);
 
-// Manejar envío del formulario
+// Prevenir multiple submit
+let isSubmitting = false;
+
+// Manejar envío del formulario con mejor UX
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
+  
+  // Prevenir envíos duplicados
+  if (isSubmitting) return;
 
-  // Obtener valores del formulario
+  // Obtener valores del formulario y hacer trim
   const username = document.getElementById("user").value.trim();
   const password = document.getElementById("password").value.trim();
 
@@ -26,6 +32,12 @@ form.addEventListener("submit", async (e) => {
     mostrarError("Por favor completa todos los campos");
     return;
   }
+
+  isSubmitting = true;
+  const submitBtn = form.querySelector('button[type="submit"]');
+  const btnText = submitBtn.textContent;
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Iniciando...";
 
   try {
     // Enviar solicitud al servidor
@@ -51,18 +63,25 @@ form.addEventListener("submit", async (e) => {
       // Login fallido
       console.error("❌ Error en login:", data.error.message);
       mostrarError(data.error.message);
+      isSubmitting = false;
+      submitBtn.disabled = false;
+      submitBtn.textContent = btnText;
     }
   } catch (error) {
     console.error("Error en la solicitud:", error);
     mostrarError("Error de conexión con el servidor");
+    isSubmitting = false;
+    submitBtn.disabled = false;
+    submitBtn.textContent = btnText;
   }
 });
 
-// Función para mostrar error
+// Función para mostrar error con mejor accesibilidad
 function mostrarError(mensaje) {
   if (mensajeError) {
     mensajeError.textContent = mensaje || "Error al iniciar sesión";
     mensajeError.classList.remove("escondido");
+    mensajeError.focus();
     
     // Auto-ocultar después de 5 segundos
     setTimeout(() => {
@@ -70,3 +89,16 @@ function mostrarError(mensaje) {
     }, 5000);
   }
 }
+
+// Limpiar errores cuando el usuario empieza a escribir
+document.getElementById("user").addEventListener("input", () => {
+  if (mensajeError && !mensajeError.classList.contains("escondido")) {
+    mensajeError.classList.add("escondido");
+  }
+});
+
+document.getElementById("password").addEventListener("input", () => {
+  if (mensajeError && !mensajeError.classList.contains("escondido")) {
+    mensajeError.classList.add("escondido");
+  }
+});

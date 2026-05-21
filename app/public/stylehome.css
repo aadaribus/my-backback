@@ -219,7 +219,7 @@ body {
 
   /* inicia materias */
  .admateria {
-  font-size: 20px;
+  font-size: 10px;
   background-color: #517cf240;
   
   /* 1. Posicionamiento a la izquierda */
@@ -232,9 +232,9 @@ body {
   /* 3. Control del contenido interno */
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  gap: 10px;
   box-sizing: border-box; /* Incluye el padding y bordes dentro del tamaño total */
-  padding: 20px; /* Espacio interno para que el contenido no toque los bordes */
+  padding: 10px; /* Espacio interno para que el contenido no toque los bordes */
   
   /* 4. Evitar desbordamiento si el contenido es muy largo */
   overflow-y: auto; /* Añade barra de desplazamiento vertical solo si es necesario */
@@ -249,7 +249,7 @@ body {
 
 .asignature {
   font-size: 15px;
-  background-color: #f6f7f8;
+  background-color: #e60c34;
   /* 1. Posicionamiento a la derecha */
   float: none; /* Hace que se aloje a la derecha del espacio disponible */
   
@@ -261,8 +261,7 @@ body {
   display: flex;
   flex-direction: column; /* Organiza el contenido en vertical (arriba a abajo) */
   box-sizing: border-box; /* Incluye el padding y bordes dentro del tamaño total */
-  padding: 10px; /* Espacio interno para que el contenido no toque los bordes */
-  
+  padding: 0  .5px 0 .5px; /* Espacio interno para que el contenido no toque los bordes */
   /* 4. Evitar desbordamiento si el contenido es muy largo */
   overflow-y: auto; /* Añade barra de desplazamiento vertical solo si es necesario */
   align-items: center; /* Centra el contenido horizontalmente */
@@ -272,28 +271,511 @@ body {
 /*fin de materia/*
 
 
-/* Responsive */
-@media (max-width: 600px) {
-  .navbar {
-    flex-direction: column;
-    align-items: center;
+/* RESPONSIVE DESIGN - MOBILE FIRST APPROACH */
+
+/* Desktop - Estilos base (1024px y superior) */
+@media (min-width: 1025px) {
+  .admateria {
+    grid-template-columns: repeat(4, 1fr);
   }
-  .fab {
-    width: 50px;
-    height: 50px;
-    font-size: 1.5rem;
+  
+  .navbar a {
+    font-size: 16px;
+    min-width: auto;
   }
 }
 
-/* Tablets */
+/* Tablets Grandes (769px - 1024px) */
+@media (max-width: 1024px) {
+  .admateria {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 12px;
+  }
+  
+  .navbar {
+    padding: 12px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  
+  .navbar a {
+    font-size: 15px;
+  }
+  
+  .containers {
+    max-width: 90%;
+    margin: auto;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Tablets (601px - 768px) */
 @media (max-width: 768px) {
   .navbar {
-    padding: 8px;
-    gap: 5px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 10px;
+    gap: 8px;
+    align-items: center;
   }
   
   .navbar a {
     font-size: 14px;
+    padding: 8px 12px;
+    flex-shrink: 0;
+  }
+  
+  .navbar .logout-link {
+    margin-left: auto;
+    margin-right: 10px;
+  }
+  
+  .admateria {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 10px;
+    width: 100%;
+  }
+  
+  .asignature {
+    width: 100%;
+  }
+  
+  .media-actions-list {
+    gap: 10px;
+  }
+  
+  .fab {
+    width: 55px;
+    height: 55px;
+    font-size: 1.8rem;
+    bottom: 15px;
+    right: 15px;
+  }
+  
+  .fab-menu {
+    bottom: 75px;
+    right: 15px;
+  }
+  
+  .modal-content {
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .containers {
+    max-width: 95%;
+    padding: 15px;
+    margin: auto;
+    font-size: 16px;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .formh-input,
+  .formh-textarea {
+    font-size: 16px;
+    padding: 12px;
+  }
+}
+
+/* Móviles grandes (481px - 600px) */
+@media (max-width: 600px) {
+  .navbar {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 8px;
+    gap: 5px;
+    align-items: center;
+  }
+  
+  .navbar a {
+    font-size: 12px;
+    padding: 6px 8px;
+    flex-grow: 1;
+    text-align: center;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .navbar .logout-link {
+    flex-grow: 0;
+    padding: 6px;
+    margin-left: auto;
+  }
+  
+  .admateria {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 8px;
+  }
+  
+  .media-actions-list {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .media-actions-list li {
+    flex: 1 1 calc(50% - 4px);
+    min-width: 80px;
+  }
+  
+  .media-actions-list a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+  
+  .btn-custom-icon {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .fab {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+    bottom: 12px;
+    right: 12px;
+  }
+  
+  .fab-menu {
+    bottom: 65px;
+    right: 12px;
+  }
+  
+  .fab-menu button {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+  
+  .modal-content {
+    max-width: 95vw;
+    max-height: 95vh;
+    overflow-y: auto;
+    padding: 15px;
+  }
+  
+  .close {
+    font-size: 2rem;
+  }
+  
+  .containers {
+    padding: 15px;
+    margin: auto;
+    font-size: 15px;
+    max-width: 100%;
+  }
+  
+  .formh-title {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+  
+  .formh-input,
+  .formh-textarea {
+    font-size: 16px;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .form-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 15px;
+    margin-top: 8px;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .form-actions {
+    gap: 8px;
+  }
+  
+  .form-actions button {
+    flex: 1;
+  }
+}
+
+/* Móviles medianos (380px - 480px) */
+@media (max-width: 480px) {
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    color: #333;
+  }
+  
+  .navbar {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+    background: #222;
+    padding: 6px;
+    gap: 4px;
+    overflow-x: auto;
+  }
+  
+  .navbar a,
+  .navbar .logout-link {
+    font-size: 11px;
+    padding: 4px 6px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  
+  .navbar .logout-icon {
+    width: 18px;
+    height: 18px;
+    margin-left: 4px;
+  }
+  
+  .admateria {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    padding: 6px;
+    width: 100%;
+  }
+  
+  .asignature {
+    width: 100%;
+  }
+  
+  .signature-header h3 {
+    font-size: 16px;
+    margin: 8px 0;
+  }
+  
+  .media-actions-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 12px 0;
+  }
+  
+  .media-actions-list li {
+    flex: 1 1 calc(50% - 3px);
+    min-width: 70px;
+  }
+  
+  .media-actions-list li a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+  }
+  
+  .btn-custom-icon {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .fab {
+    width: 45px;
+    height: 45px;
+    font-size: 1.2rem;
+    bottom: 10px;
+    right: 10px;
+  }
+  
+  .fab-menu {
+    bottom: 60px;
+    right: 10px;
+  }
+  
+  .fab-menu button {
+    font-size: 12px;
+    padding: 6px 10px;
+    width: auto;
+  }
+  
+  .modal {
+    padding: 10px;
+  }
+  
+  .modal-content {
+    max-width: 100vw;
+    max-height: 100vh;
+    padding: 12px;
+    border-radius: 8px;
+    overflow-y: auto;
+  }
+  
+  .close {
+    font-size: 1.8rem;
+    padding: 4px;
+  }
+  
+  .containers {
+    padding: 12px;
+    gap: 10px;
+    font-size: 14px;
+  }
+  
+  .formh-title {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  
+  .formh-input,
+  .formh-textarea {
+    font-size: 16px;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 4px;
+  }
+  
+  .formh-textarea {
+    min-height: 80px;
+  }
+  
+  .form-btn {
+    width: 100%;
+    padding: 11px;
+    font-size: 14px;
+    margin-top: 6px;
+  }
+  
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .form-actions {
+    gap: 8px;
+    padding-top: 12px;
+  }
+  
+  .form-actions button {
+    flex: 1;
+    font-size: 13px;
+  }
+}
+
+/* Móviles pequeños (< 380px) */
+@media (max-width: 380px) {
+  body {
+    margin: 0;
+    padding: 0;
+  }
+  
+  .navbar {
+    padding: 4px;
+    gap: 2px;
+  }
+  
+  .navbar a,
+  .navbar .logout-link {
+    font-size: 10px;
+    padding: 3px 4px;
+  }
+  
+  .navbar .logout-icon {
+    width: 16px;
+    height: 16px;
+    margin-left: 2px;
+  }
+  
+  .admateria {
+    grid-template-columns: 1fr;
+    gap: 4px;
+    padding: 4px;
+  }
+  
+  .signature-header h3 {
+    font-size: 14px;
+    margin: 6px 0;
+  }
+  
+  .media-actions-list {
+    gap: 4px;
+    margin: 0 0 8px 0;
+  }
+  
+  .media-actions-list li {
+    flex: 1 1 100%;
+  }
+  
+  .btn-custom-icon {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .fab {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+    bottom: 8px;
+    right: 8px;
+  }
+  
+  .fab-menu {
+    bottom: 50px;
+    right: 8px;
+  }
+  
+  .fab-menu button {
+    font-size: 11px;
+    padding: 5px 8px;
+  }
+  
+  .modal-content {
+    padding: 10px;
+  }
+  
+  .close {
+    font-size: 1.5rem;
+  }
+  
+  .containers {
+    padding: 10px;
+    font-size: 13px;
+    gap: 8px;
+  }
+  
+  .formh-title {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+  
+  .formh-input,
+  .formh-textarea {
+    font-size: 14px;
+    padding: 8px;
+  }
+  
+  .formh-textarea {
+    min-height: 70px;
+  }
+  
+  .form-btn {
+    padding: 10px;
+    font-size: 13px;
   }
 }
 /* Contenedor principal */

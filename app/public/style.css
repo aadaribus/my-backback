@@ -77,25 +77,70 @@ color: red;
     overflow: hidden;
 }
 
-/* Responsive para tablets y dispositivos medianos */
-@media (max-width: 768px) {
+/* Responsive para tablets y dispositivos medianos (iPad, tablets) */
+@media (max-width: 1024px) {
     body {
         font-size: medium;
     }
     
     .form-container {
-        padding: 30px 20px;
-        margin: 15px;
+        max-width: 450px;
+        padding: 35px 25px;
+        margin: 20px auto;
     }
     
     input, button {
-        padding: 12px 20px;
+        padding: 14px 25px;
         font-size: medium;
     }
 }
 
-/* Responsive para móviles */
-@media (max-width: 480px) {
+/* Responsive para tablets medianas */
+@media (max-width: 768px) {
+    html {
+        --s: 150px;
+    }
+    
+    body {
+        font-size: medium;
+        min-height: 100svh;
+    }
+    
+    .form-container {
+        max-width: 100%;
+        width: 90vw;
+        padding: 30px 20px;
+        margin: 15px auto;
+        border-radius: 12px;
+    }
+    
+    h1 {
+        font-size: 28px;
+        margin-bottom: 10px;
+    }
+    
+    p {
+        font-size: 16px;
+    }
+    
+    input, button {
+        padding: 13px 20px;
+        font-size: 16px;
+        width: 100%;
+        border-radius: 6px;
+    }
+    
+    form {
+        gap: 12px;
+    }
+    
+    form + p {
+        margin-top: 15px;
+    }
+}
+
+/* Responsive para móviles grandes (600px - 768px) */
+@media (max-width: 600px) {
     body {
         font-size: 16px;
         min-height: 100vh;
@@ -104,17 +149,18 @@ color: red;
     .form-container {
         width: 100%;
         max-width: 100%;
-        padding: 20px 15px;
+        padding: 25px 15px;
         margin: 10px;
-        border-radius: 8px;
+        border-radius: 10px;
     }
     
     h1 {
-        font-size: 24px;
+        font-size: 26px;
+        margin-bottom: 8px;
     }
     
     h2, p {
-        font-size: 16px;
+        font-size: 15px;
     }
     
     input, button {
@@ -124,6 +170,88 @@ color: red;
     }
     
     form {
-        gap: 12px;
+        gap: 10px;
+    }
+}
+
+/* Responsive para móviles pequeños (< 480px) */
+@media (max-width: 480px) {
+    html {
+        --s: 120px;
+    }
+    
+    body {
+        font-size: 15px;
+        min-height: 100vh;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .form-container {
+        width: 100%;
+        max-width: 100%;
+        padding: 20px 12px;
+        margin: 8px;
+        border-radius: 8px;
+        box-sizing: border-box;
+    }
+    
+    h1 {
+        font-size: 22px;
+        margin-bottom: 5px;
+    }
+    
+    h2, p {
+        font-size: 14px;
+        margin: 8px 0;
+    }
+    
+    input, button {
+        padding: 12px 14px;
+        font-size: 16px;
+        width: 100%;
+        box-sizing: border-box;
+        border-radius: 5px;
+    }
+    
+    button {
+        margin-top: 5px;
+    }
+    
+    form {
+        gap: 8px;
+    }
+    
+    form + p, form p {
+        font-size: 13px;
+    }
+    
+    .sr-only {
+        position: absolute;
+        left: -10000px;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+    }
+}
+
+/* Responsive ultra-móviles (< 380px) */
+@media (max-width: 380px) {
+    .form-container {
+        padding: 15px 10px;
+        margin: 5px;
+    }
+    
+    h1 {
+        font-size: 20px;
+    }
+    
+    p {
+        font-size: 13px;
+    }
+    
+    input, button {
+        padding: 10px 12px;
+        font-size: 14px;
     }
 }

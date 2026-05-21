@@ -4,24 +4,57 @@ const modal = document.getElementById('modal');
 const closeBtn = document.getElementById('close');
 const formContent = document.getElementById('formContent');
 
-// Mostrar/ocultar menú
+let menuOpen = false;
+
+// Mostrar/ocultar menú con mejor accesibilidad
 fab.addEventListener('click', () => {
-  fabMenu.style.display = fabMenu.style.display === 'flex' ? 'none' : 'flex';
+  menuOpen = !menuOpen;
+  fabMenu.style.display = menuOpen ? 'flex' : 'none';
+  fab.setAttribute('aria-expanded', menuOpen);
 });
 
-// Abrir modal con formulario
+// Cerrar menú al hacer clic en cualquier botón
 fabMenu.querySelectorAll('button').forEach(btn => {
   btn.addEventListener('click', () => {
     const type = btn.dataset.form;
     formContent.innerHTML = generarFormulario(type);
     modal.style.display = 'flex';
+    modal.setAttribute('aria-hidden', 'false');
     fabMenu.style.display = 'none';
+    menuOpen = false;
+    fab.setAttribute('aria-expanded', 'false');
+    
+    // Enfocar el primer input en el modal
+    setTimeout(() => {
+      const firstInput = modal.querySelector('input, textarea');
+      if (firstInput) firstInput.focus();
+    }, 100);
   });
 });
 
-// Cerrar modal
+// Cerrar modal al hacer clic en el botón X
 closeBtn.addEventListener('click', () => {
   modal.style.display = 'none';
+  modal.setAttribute('aria-hidden', 'true');
+  fab.focus();
+});
+
+// Cerrar modal al hacer clic fuera del contenido (click en backdrop)
+modal.addEventListener('click', (e) => {
+  if (e.target === modal) {
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden', 'true');
+    fab.focus();
+  }
+});
+
+// Cerrar modal con tecla ESC
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && modal.style.display === 'flex') {
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden', 'true');
+    fab.focus();
+  }
 });
 
 // Cerrar sesión al hacer clic en la imagen de logout
@@ -38,7 +71,6 @@ if (logoutLink) {
       });
       
       if (response.ok) {
-        // Redirigir a login después de cerrar sesión exitosamente
         window.location.href = '/';
       } else {
         console.error('Error al cerrar sesión');
@@ -49,54 +81,127 @@ if (logoutLink) {
   });
 }
 
-// Generador de formularios
+// Generador de formularios mejorado
 function generarFormulario(type) {
   switch(type) {
     case 'materia':
       return `
-              <div class="containers">
-              <h2 class="formh-title">Crear Materia</h2>
-              <input class="formh-input" type="text" placeholder="Nombre de la materia">
-              <input class="formh-input" type="text" placeholder="Profesor">
-              <button class="formh-btn">Guardar</button>
-              </div>`;
+        <div class="containers">
+          <h2 id="modal-title" class="formh-title">Crear Materia</h2>
+          <input 
+            class="formh-input" 
+            type="text" 
+            placeholder="Nombre de la materia"
+            required
+            aria-label="Nombre de la materia"
+          >
+          <input 
+            class="formh-input" 
+            type="text" 
+            placeholder="Profesor"
+            aria-label="Profesor"
+          >
+          <button class="form-btn" type="button">Guardar</button>
+        </div>`;
     case 'perfil':
-      return `<div class="containers">
-              <h2 class="formh-title">Editar Perfil</h2>
-              <input class="formh-input" type="text" placeholder="1er Nombre">
-              <input class="formh-input" type="text" placeholder="2do Nombre">
-              <input class="formh-input" type="text" placeholder="1er Apellido">
-              <input class="formh-input" type="text" placeholder="2do Apellido">
-              <input class="formh-input" type="email" placeholder="Correo">
-              <input class="formh-input" type="text" placeholder="Universidad/Instituto">
-              <input class="formh-input" type="text" placeholder="Año en curso">
-              <input class="formh-input" type="text" placeholder="Fecha de finalizacion">
-              <button class="formh-btn">Guardar</button>
-              </div>`;
+      return `
+        <div class="containers">
+          <h2 id="modal-title" class="formh-title">Editar Perfil</h2>
+          <input 
+            class="formh-input" 
+            type="text" 
+            placeholder="Primer Nombre"
+            aria-label="Primer Nombre"
+          >
+          <input 
+            class="formh-input" 
+            type="text" 
+            placeholder="Segundo Nombre"
+            aria-label="Segundo Nombre"
+          >
+          <input 
+            class="formh-input" 
+            type="text" 
+            placeholder="Primer Apellido"
+            aria-label="Primer Apellido"
+          >
+          <input 
+            class="formh-input" 
+            type="text" 
+            placeholder="Segundo Apellido"
+            aria-label="Segundo Apellido"
+          >
+          <input 
+            class="formh-input" 
+            type="email" 
+            placeholder="Correo"
+            aria-label="Correo"
+          >
+          <input 
+            class="formh-input" 
+            type="text" 
+            placeholder="Universidad/Instituto"
+            aria-label="Universidad o Instituto"
+          >
+          <input 
+            class="formh-input" 
+            type="text" 
+            placeholder="Año en curso"
+            aria-label="Año en curso"
+          >
+          <input 
+            class="formh-input" 
+            type="text" 
+            placeholder="Fecha de finalización"
+            aria-label="Fecha de finalización"
+          >
+          <button class="form-btn" type="button">Guardar</button>
+        </div>`;
     case 'apunte':
       return `
-              <div class="containers">
-              <h2 class="formh-title">Apunte Rápido</h2>
-              <textarea class="formh-textarea" placeholder="Escribe tu apunte"></textarea>
-              <button class="formh-btn">Guardar</button>
-              </div>`;
+        <div class="containers">
+          <h2 id="modal-title" class="formh-title">Apunte Rápido</h2>
+          <textarea 
+            class="formh-textarea" 
+            placeholder="Escribe tu apunte"
+            required
+            aria-label="Contenido del apunte"
+          ></textarea>
+          <button class="form-btn" type="button">Guardar</button>
+        </div>`;
     case 'grupo':
       return `
-              <div class="containers">
-              <h2 class="formh-title">Crear Grupo</h2>
-              <input class="formh-input" type="text" placeholder="Nombre del grupo">
-              <button class="formh-btn">Guardar</button>
-              </div>`;
-              case 'evento':
-                return `
-                        <div class="containers">
-                        <h2 class="formh-title">Crear Evento</h2>
-                        <input class="formh-input" type="text" placeholder="Nombre del evento">
-                        <input class="formh-input" type="date" placeholder="Fecha del evento">
-                        <button class="formh-btn">Guardar</button>
-                        </div>`;
+        <div class="containers">
+          <h2 id="modal-title" class="formh-title">Crear Grupo</h2>
+          <input 
+            class="formh-input" 
+            type="text" 
+            placeholder="Nombre del grupo"
+            required
+            aria-label="Nombre del grupo"
+          >
+          <button class="form-btn" type="button">Guardar</button>
+        </div>`;
+    case 'evento':
+      return `
+        <div class="containers">
+          <h2 id="modal-title" class="formh-title">Crear Evento</h2>
+          <input 
+            class="formh-input" 
+            type="text" 
+            placeholder="Nombre del evento"
+            required
+            aria-label="Nombre del evento"
+          >
+          <input 
+            class="formh-input" 
+            type="date"
+            required
+            aria-label="Fecha del evento"
+          >
+          <button class="form-btn" type="button">Guardar</button>
+        </div>`;
     default:
       return '';
-
   }
 }

@@ -2,27 +2,47 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="description" content="Inicia sesión en tu cuenta">
+    <meta name="theme-color" content="#5e3a22">
     <title>Inicio de sesión</title>
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-      <main>
-<div class="form-container">
-<h1>Iniciar sesión</h1>
-<p>Ingresa usuario y contraseña para ingresar</p>
-<form id="login-form">
-<label class="sr-only" for="user">Usuario</label>
-<input type="text" id="user" name="username" placeholder="Nombre de usuario">
-<label class="sr-only" for="password">Contraseña</label>
-<input type="password" id="password" name="password" placeholder="Contraseña">
-<button type="submit">Iniciar sesión</button>
-<p class="error escondido">Error al iniciar sesión</p>
-
-</form>
-<p>Si aun no tienes una cuenta, <a href="/register">Registrar</a></p>
-</div>
-
+    <main role="main">
+        <div class="form-container">
+            <h1>Iniciar sesión</h1>
+            <p>Ingresa usuario y contraseña para ingresar</p>
+            <form id="login-form" method="POST" novalidate>
+                <div>
+                    <label class="sr-only" for="user">Usuario</label>
+                    <input 
+                        type="text" 
+                        id="user" 
+                        name="username" 
+                        placeholder="Nombre de usuario"
+                        required
+                        autocomplete="username"
+                        aria-label="Nombre de usuario"
+                    >
+                </div>
+                <div>
+                    <label class="sr-only" for="password">Contraseña</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Contraseña"
+                        required
+                        autocomplete="current-password"
+                        aria-label="Contraseña"
+                    >
+                </div>
+                <button type="submit" aria-label="Iniciar sesión">Iniciar sesión</button>
+                <p class="error escondido" role="alert" aria-live="polite">Error al iniciar sesión</p>
+            </form>
+            <p>Si aún no tienes una cuenta, <a href="/register" aria-label="Ir a página de registro">Registrar</a></p>
+        </div>
     </main>
     <script src="/login.js" defer></script>
 </body>
