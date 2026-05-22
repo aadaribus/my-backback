@@ -115,13 +115,3 @@ document.getElementById('password').addEventListener('input', () => {
         mensajeError.classList.add("escondido");
     }
 });
-    if (mensajeError) {
-        mensajeError.textContent = mensaje || "Error al crear la cuenta";
-        mensajeError.classList.remove("escondido");
-        
-        // Auto-ocultar después de 5 segundos
-        setTimeout(() => {
-            mensajeError.classList.add("escondido");
-        }, 5000);
-    }
-}
