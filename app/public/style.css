@@ -13,7 +13,7 @@ html {
 
 
 body {
-        margin: 0;
+    margin: 0;
     padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
@@ -21,6 +21,9 @@ body {
     align-items: center;
     min-height: 100svh;
     font-size: large;
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
 
 }
 
@@ -60,6 +63,47 @@ button{
     cursor: pointer;
 }
 
+/* Password toggle button styles */
+.password-container {
+    position: relative;
+}
+
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper input {
+    flex: 1;
+    padding-right: 50px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #5e3a22;
+}
+
+.toggle-password:hover {
+    color: #8b5a3c;
+}
+
+.eye-icon,
+.eye-closed-icon {
+    width: 100%;
+    height: 100%;
+}
+
 .error{
 color: red;
 }
@@ -75,6 +119,18 @@ color: red;
     width: 1px;
     height: 1px;
     overflow: hidden;
+}
+
+/* FOOTER*/
+.pie {
+    display: flex;
+    margin-top: auto;
+    text-align: center;
+    padding: 20px;
+   /* background-color: #f8f9fa;  Cambia el color de fondo aquí */
+    color: #333333;            /* Cambia el color del texto aquí */
+    font-family: Arial, sans-serif;
+    font-weight: bold;
 }
 
 /* Responsive para tablets y dispositivos medianos (iPad, tablets) */
@@ -137,6 +193,16 @@ color: red;
     form + p {
         margin-top: 15px;
     }
+    
+    .password-wrapper input {
+        padding-right: 45px;
+    }
+    
+    .toggle-password {
+        width: 20px;
+        height: 20px;
+        right: 12px;
+    }
 }
 
 /* Responsive para móviles grandes (600px - 768px) */
@@ -173,6 +239,9 @@ color: red;
         gap: 10px;
     }
 }
+
+
+
 
 /* Responsive para móviles pequeños (< 480px) */
 @media (max-width: 480px) {

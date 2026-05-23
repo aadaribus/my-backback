@@ -264,7 +264,10 @@ body {
   
   /* 4. Evitar desbordamiento si el contenido es muy largo */
   overflow-y: auto; /* Añade barra de desplazamiento vertical solo si es necesario */
+
+
 }
+
 
 /* Limpiador de flotado (Añade esto justo después de tu formulario en el HTML para evitar errores de diseño) */
 .clearfix::after {
@@ -274,8 +277,9 @@ body {
 }
 
 .asignature {
+  border-radius: 10px;
   font-size: 15px;
-  background-color: #e60c34;
+  background-color: #e8917d69;
   /* 1. Posicionamiento a la derecha */
   float: none; /* Hace que se aloje a la derecha del espacio disponible */
   
@@ -292,7 +296,6 @@ body {
   overflow-y: auto; /* Añade barra de desplazamiento vertical solo si es necesario */
   align-items: center; /* Centra el contenido horizontalmente */
 }
-
 
 /*fin de materia/*
 
@@ -380,17 +383,7 @@ body {
     max-width: 100px;
   }
   
-  .admateria {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    padding: 10px;
-    width: 100%;
-  }
-  
-  .asignature {
-    width: 100%;
-  }
-  
+   
   .media-actions-list {
     gap: 10px;
   }
@@ -469,12 +462,7 @@ body {
     max-width: 80px;
   }
   
-  .admateria {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    padding: 8px;
-  }
-  
+    
   .media-actions-list {
     flex-wrap: wrap;
     gap: 8px;
@@ -606,12 +594,6 @@ body {
     margin-left: 4px;
   }
   
-  .admateria {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 6px;
-    padding: 6px;
-    width: 100%;
-  }
   
   .asignature {
     width: 100%;
@@ -763,17 +745,7 @@ body {
     margin-left: 2px;
   }
   
-  .admateria {
-    grid-template-columns: 1fr;
-    gap: 4px;
-    padding: 4px;
-  }
-  
-  .signature-header h3 {
-    font-size: 14px;
-    margin: 6px 0;
-  }
-  
+    
   .media-actions-list {
     gap: 4px;
     margin: 0 0 8px 0;

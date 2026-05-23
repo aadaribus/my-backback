@@ -115,3 +115,31 @@ document.getElementById('password').addEventListener('input', () => {
         mensajeError.classList.add("escondido");
     }
 });
+
+// Toggle password visibility
+document.addEventListener("DOMContentLoaded", () => {
+  const toggleBtn = document.querySelector(".toggle-password");
+  const passwordInput = document.getElementById("password");
+  const eyeIcon = document.querySelector(".eye-icon");
+  const eyeClosedIcon = document.querySelector(".eye-closed-icon");
+
+  if (toggleBtn && passwordInput) {
+    toggleBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      
+      const isPassword = passwordInput.type === "password";
+      passwordInput.type = isPassword ? "text" : "password";
+      
+      // Toggle icons
+      if (isPassword) {
+        eyeIcon.style.display = "none";
+        eyeClosedIcon.style.display = "block";
+        toggleBtn.setAttribute("aria-label", "Ocultar contraseña");
+      } else {
+        eyeIcon.style.display = "block";
+        eyeClosedIcon.style.display = "none";
+        toggleBtn.setAttribute("aria-label", "Mostrar contraseña");
+      }
+    });
+  }
+});
