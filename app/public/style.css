@@ -1,7 +1,7 @@
 html {
   --s: 182px; /* control the size*/
-  --c1: #5e3a22;
-  --c2: #ffffff;
+  --c1: #f76402;
+  --c2: #fafafafc;
   
   --_g: #0000 90deg,var(--c1) 0;
   background: 
@@ -30,8 +30,8 @@ body {
 .form-container{
     width: 100%;
     max-width: 500px;
-    background-color: white;
-    border: 2px solid hwb(241 8% 14% / 0.281);
+    background-color: rgba(253, 251, 251, 0.681);
+    border: 2px solid hwb(269 2% 9% / 0.745);
     border-radius: 10px;
     padding: 40px 20px;
     margin: 20px;
