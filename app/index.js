@@ -137,6 +137,7 @@ app.get("/register", authorization.soloUsuario, (req, res) =>
   res.sendFile(__dirname + "/page/register.html")
 );
 
+
 // 🔑 Aquí decides si solo admin entra o cualquier usuario logueado
 // Opción 1: solo admin
 // app.get("/home", authorization.soloAdmin, (req, res) =>
@@ -154,6 +155,9 @@ app.post("/api/logout", (req, res) => {
   res.clearCookie("jwt", { path: "/" });
   res.json({ status: "ok", message: "Sesión cerrada correctamente" });
 });
+app.get("/about", authorization.soloLogueado, (req, res) =>
+  res.sendFile(__dirname + "/page/about.html")
+);
 
 // Endpoint para obtener información del usuario actual
 app.get("/api/usuario", (req, res) => {
