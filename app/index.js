@@ -74,6 +74,7 @@ import cookieParser from 'cookie-parser';
 import jsonwebtoken from 'jsonwebtoken';
 import { methods as authentication } from "./controllers/authentication.controller.js";
 import { methods as authorization } from "./middlewares/authorization.js";
+import { methods as cuaderno } from "./controllers/cuaderno.controller.js";
 
 // Función de prueba de conexión a Supabase
 async function testSupabaseConnection() {
@@ -260,3 +261,30 @@ app.get("/ping-supabase", async (req, res) => {
     });
   }
 });
+
+// ============================================================
+// 📚 RUTAS DEL CUADERNO DIGITAL
+// ============================================================
+
+// POST /api/cuaderno/crear - Crear cuaderno (normalmente automático)
+app.post("/api/cuaderno/crear", cuaderno.crearCuaderno);
+
+// POST /api/cuaderno/guardar - Guardar entrada en cuaderno
+app.post("/api/cuaderno/guardar", cuaderno.guardarEntrada);
+
+// GET /api/cuaderno/:notebook_id - Obtener todas las entradas
+app.get("/api/cuaderno/:notebook_id", cuaderno.obtenerEntradas);
+
+// GET /api/cuaderno/materia/:subject_id - Obtener cuaderno por materia
+app.get("/api/cuaderno/materia/:subject_id", cuaderno.obtenerCuadernoMateria);
+
+// PUT /api/cuaderno/entrada/:entry_id - Actualizar entrada
+app.put("/api/cuaderno/entrada/:entry_id", cuaderno.actualizarEntrada);
+
+// DELETE /api/cuaderno/entrada/:entry_id - Eliminar entrada
+app.delete("/api/cuaderno/entrada/:entry_id", cuaderno.eliminarEntrada);
+
+// POST /api/cuaderno/upload - Subir archivo multimedia
+app.post("/api/cuaderno/upload", cuaderno.subirArchivo);
+
+console.log('✅ Rutas del Cuaderno Digital inicializadas');

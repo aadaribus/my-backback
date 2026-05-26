@@ -29,8 +29,8 @@
         <li><a href="#" data-modal="contacto">Contacto</a></li>
       </ul>
       <div class="icons">
-       <button class="logout-btn" id="inisBtn" aria-label="Sobre nosotros" type="button">
-          <img src="/assets/inicio-mat.png" alt="Sobre nosotros" class="logout-icon" loading="lazy">
+       <button class="logout-btn" id="notebookBtn" aria-label="Cuaderno Digital" type="button">
+          <img src="/assets/inicio-mat.png" alt="Cuaderno Digital" class="logout-icon" loading="lazy">
 
         </button>
         <button class="logout-btn" id="aboutBtn" aria-label="Sobre nosotros" type="button">
@@ -384,6 +384,74 @@
       </form>
     </div>
   </div>
+
+  <!-- Modal: Cuaderno Digital (Amplio) -->
+  <div class="modal modal-expanded" id="notebookModal">
+    <div class="modal-content modal-content-expanded">
+      <div class="modal-header">
+        <div class="notebook-header-left">
+          <h2>Cuaderno Digital</h2>
+          <p class="notebook-subject" id="notebookSubject">Matemáticas</p>
+        </div>
+        <button class="modal-close" data-close="notebookModal">&times;</button>
+      </div>
+
+      <!-- Editor Toolbar -->
+      <div class="notebook-toolbar">
+        <button type="button" class="toolbar-btn" id="boldBtn" title="Negrita (Ctrl+B)">
+          <strong>B</strong>
+        </button>
+        <button type="button" class="toolbar-btn" id="italicBtn" title="Cursiva (Ctrl+I)">
+          <em>I</em>
+        </button>
+        <button type="button" class="toolbar-btn" id="underlineBtn" title="Subrayado (Ctrl+U)">
+          <u>U</u>
+        </button>
+        <div class="toolbar-divider"></div>
+        <button type="button" class="toolbar-btn" id="fileBtn" title="Agregar archivo">
+          📎 Archivo
+        </button>
+        <button type="button" class="toolbar-btn" id="imageBtn" title="Agregar imagen">
+          🖼️ Imagen
+        </button>
+        <button type="button" class="toolbar-btn" id="audioBtn" title="Agregar audio">
+          🎤 Audio
+        </button>
+        <button type="button" class="toolbar-btn" id="videoBtn" title="Agregar video">
+          🎬 Video
+        </button>
+        <div class="toolbar-divider"></div>
+        <button type="button" class="toolbar-btn" id="clearBtn" title="Limpiar formato">
+          ⚡ Limpiar
+        </button>
+      </div>
+
+      <!-- Área de Drop -->
+      <div class="drop-zone" id="dropZone">
+        <p class="drop-hint">Arrastra archivos aquí o usa los botones arriba</p>
+      </div>
+
+      <!-- Editor de Texto Enriquecido -->
+      <div class="notebook-editor" id="notebookEditor" contenteditable="true" role="textbox" aria-label="Editor de cuaderno digital"></div>
+
+      <!-- Área de Contenido (entradas del cuaderno) -->
+      <div class="notebook-entries" id="notebookEntries">
+        <!-- Las entradas se agregarán dinámicamente aquí -->
+      </div>
+
+      <!-- Modal Buttons -->
+      <div class="modal-buttons">
+        <button type="button" class="btn-submit" id="saveNotebook">Guardar</button>
+        <button type="button" class="btn-cancel" data-close="notebookModal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input Hidden para archivos -->
+  <input type="file" id="fileInput" style="display: none;" accept=".pdf,.doc,.docx,.txt">
+  <input type="file" id="imageInput" style="display: none;" accept="image/*">
+  <input type="file" id="audioInput" style="display: none;" accept="audio/*">
+  <input type="file" id="videoInput" style="display: none;" accept="video/*">
 
   <script src="/home.js"></script>
 </body>
