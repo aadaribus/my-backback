@@ -365,6 +365,155 @@ function loadNotebookData() {
   }
 }
 
+// ========== MATERIAS FUNCTIONALITY ==========
+
+// Manejador para guardar materia
+const materiaForm = document.querySelector('#materiaModal form');
+if (materiaForm) {
+  materiaForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const name = materiaForm.querySelector('input[placeholder="Nombre de la materia"]').value;
+    const professor = materiaForm.querySelector('input[placeholder="Profesor"]').value;
+    const schedule = materiaForm.querySelector('input[placeholder="Horario"]').value;
+    const description = materiaForm.querySelector('textarea[placeholder="Descripción"]').value;
+
+    if (!name.trim()) {
+      alert('❌ Por favor ingresa el nombre de la materia');
+      return;
+    }
+
+    console.log('📚 Guardando materia:', name);
+
+    try {
+      const response = await fetch('/api/materias/crear', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          name,
+          professor,
+          schedule,
+          description
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log('✅ Materia guardada:', data.subject_id);
+        alert(`✅ Materia "${name}" creada exitosamente`);
+        materiaForm.reset();
+        closeModal('materiaModal');
+      } else {
+        console.error('❌ Error:', data.error);
+        alert(`❌ Error: ${data.error}`);
+      }
+    } catch (error) {
+      console.error('❌ Error al guardar materia:', error);
+      alert('❌ Error al guardar materia: ' + error.message);
+    }
+  });
+}
+
+// ========== PERFIL FUNCTIONALITY ==========
+
+// Cargar datos del perfil al abrir el modal
+const perfilLink = document.querySelector('a[data-modal="perfil"]');
+if (perfilLink) {
+  perfilLink.addEventListener('click', async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('/api/perfil', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const profile = data.profile;
+
+        // Llenar formulario con datos existentes
+        const fullNameInput = document.querySelector('#perfilModal input[placeholder="Nombre completo"]');
+        const emailInput = document.querySelector('#perfilModal input[placeholder="Correo electrónico"]');
+        const phoneInput = document.querySelector('#perfilModal input[placeholder="Teléfono"]');
+        const institutionInput = document.querySelector('#perfilModal input[placeholder="Universidad/Instituto"]');
+        const careerInput = document.querySelector('#perfilModal input[placeholder="Carrera"]');
+
+        if (fullNameInput) fullNameInput.value = profile.full_name || '';
+        if (emailInput) emailInput.value = profile.email || '';
+        if (phoneInput) phoneInput.value = profile.phone || '';
+        if (institutionInput) institutionInput.value = profile.institution || '';
+        if (careerInput) careerInput.value = profile.career || '';
+
+        openModal('perfilModal');
+      }
+    } catch (error) {
+      console.error('Error al cargar perfil:', error);
+      openModal('perfilModal');
+    }
+  });
+}
+
+// Manejador para actualizar perfil
+const perfilForm = document.querySelector('#perfilModal form');
+if (perfilForm) {
+  perfilForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const full_name = perfilForm.querySelector('input[placeholder="Nombre completo"]').value;
+    const email = perfilForm.querySelector('input[placeholder="Correo electrónico"]').value;
+    const phone = perfilForm.querySelector('input[placeholder="Teléfono"]').value;
+    const institution = perfilForm.querySelector('input[placeholder="Universidad/Instituto"]').value;
+    const career = perfilForm.querySelector('input[placeholder="Carrera"]').value;
+
+    if (!full_name.trim()) {
+      alert('❌ Por favor ingresa tu nombre completo');
+      return;
+    }
+
+    console.log('👤 Actualizando perfil');
+
+    try {
+      const response = await fetch('/api/perfil', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          full_name,
+          email,
+          phone,
+          institution,
+          career
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log('✅ Perfil actualizado');
+        alert('✅ Perfil actualizado exitosamente');
+        closeModal('perfilModal');
+      } else {
+        console.error('❌ Error:', data.error);
+        alert(`❌ Error: ${data.error}`);
+      }
+    } catch (error) {
+      console.error('❌ Error al actualizar perfil:', error);
+      alert('❌ Error al actualizar perfil: ' + error.message);
+    }
+  });
+}
+
+// ========== END MATERIAS Y PERFIL =========
+
 // Guardar en servidor (placeholder)
 function saveToServer(entry) {
   // Este endpoint deberá ser implementado en el backend

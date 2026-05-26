@@ -75,6 +75,8 @@ import jsonwebtoken from 'jsonwebtoken';
 import { methods as authentication } from "./controllers/authentication.controller.js";
 import { methods as authorization } from "./middlewares/authorization.js";
 import { methods as cuaderno } from "./controllers/cuaderno.controller.js";
+import { methods as subjects } from "./controllers/subjects.controller.js";
+import { methods as profile } from "./controllers/profile.controller.js";
 
 // Función de prueba de conexión a Supabase
 async function testSupabaseConnection() {
@@ -288,3 +290,36 @@ app.delete("/api/cuaderno/entrada/:entry_id", cuaderno.eliminarEntrada);
 app.post("/api/cuaderno/upload", cuaderno.subirArchivo);
 
 console.log('✅ Rutas del Cuaderno Digital inicializadas');
+
+// ============================================================
+// 📚 RUTAS DE MATERIAS/ASIGNATURAS
+// ============================================================
+
+// POST /api/materias/crear - Crear nueva materia
+app.post("/api/materias/crear", subjects.crearMateria);
+
+// GET /api/materias - Obtener todas las materias del usuario
+app.get("/api/materias", subjects.obtenerMaterias);
+
+// GET /api/materias/:subject_id - Obtener una materia específica
+app.get("/api/materias/:subject_id", subjects.obtenerMateria);
+
+// PUT /api/materias/:subject_id - Actualizar una materia
+app.put("/api/materias/:subject_id", subjects.actualizarMateria);
+
+// DELETE /api/materias/:subject_id - Eliminar una materia
+app.delete("/api/materias/:subject_id", subjects.eliminarMateria);
+
+console.log('✅ Rutas de Materias inicializadas');
+
+// ============================================================
+// 👤 RUTAS DE PERFIL
+// ============================================================
+
+// GET /api/perfil - Obtener perfil del usuario
+app.get("/api/perfil", profile.obtenerPerfil);
+
+// PUT /api/perfil - Actualizar perfil del usuario
+app.put("/api/perfil", profile.actualizarPerfil);
+
+console.log('✅ Rutas de Perfil inicializadas');
