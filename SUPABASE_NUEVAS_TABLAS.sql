@@ -338,7 +338,7 @@ EXECUTE FUNCTION move_to_history();
 -- VERIFICACIÓN FINAL
 -- ============================================================
 -- Ejecuta estos SELECT para verificar que todo fue creado:
-
+/*
 SELECT * FROM information_schema.tables 
 WHERE table_schema = 'public' 
 AND table_name IN ('profiledate', 'materialuser', 'bookdigital', 'bookhistory', 'gruppro', 'tareapro');
@@ -346,15 +346,15 @@ AND table_name IN ('profiledate', 'materialuser', 'bookdigital', 'bookhistory', 
 INSERT INTO profiledate (user_id, namecomplet, usermail, userfone, useruni)
 VALUES ('tu-uuid-aqui', 'Juan García', 'juan@example.com', '+34612345678', 'Universidad de Madrid');
 
-
+-- Insertar materia de ejemplo
 INSERT INTO materialuser (user_id, admaterial, nameprof, horauser, descriptionmateria)
 VALUES ('tu-uuid-aqui', 'Matemáticas', 'Dr. García', 'Lunes 9am', 'Cálculo avanzado');
 
-
+-- Insertar entrada en cuaderno
 INSERT INTO bookdigital (user_id, materialuser_id, texmaterial)
 VALUES ('tu-uuid-aqui', 1, '<p>Mi primera entrada</p>');
 
-
+-- Ver en historial
 SELECT * FROM bookhistory;
 */
 
