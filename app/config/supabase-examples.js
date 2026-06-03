@@ -1,53 +1,105 @@
 // app/config/supabase-examples.js
 // Este archivo contiene ejemplos de cómo usar Supabase en tu proyecto
+// Versión 2.0 - Actualizado con nuevas tablas
 
 import { supabase } from './supabase.js';
 
 /**
- * EJEMPLOS DE CONSULTAS A SUPABASE
+ * EJEMPLOS DE CONSULTAS A SUPABASE v2.0
  * Puedes usar estos ejemplos como referencia para expandir tu aplicación
+ * NUEVAS TABLAS: profiledate, materialuser, bookdigital, bookhistory, gruppro, tareapro
  */
 
 // ============================================
-// 1. USUARIOS (autenticación)
+// 1. PROFILEDATE (Perfil del Usuario)
 // ============================================
 
 /**
- * Buscar usuario por nombre de usuario
+ * Obtener perfil del usuario actual
  */
-export async function buscarUsuarioPorUsername(username) {
+export async function obtenerPerfilUsuario() {
     const { data, error } = await supabase
-        .from('users')
+        .from('profiledate')
         .select('*')
-        .eq('username', username)
         .single();
     
     if (error) {
-        console.error('Error:', error);
+        console.error('Error al obtener perfil:', error);
         return null;
     }
     return data;
 }
 
 /**
- * Buscar usuario por email
+ * Actualizar perfil del usuario
  */
-export async function buscarUsuarioPorEmail(email) {
+export async function actualizarPerfilUsuario(perfilData) {
+    const { namecomplet, usermail, userfone, useruni } = perfilData;
     const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('email', email)
+        .from('profiledate')
+        .upsert({
+            namecomplet,
+            usermail,
+            userfone,
+            useruni,
+            updated_at: new Date()
+        })
+        .select()
         .single();
     
     if (error) {
-        console.error('Error:', error);
+        console.error('Error al actualizar perfil:', error);
+        return null;
+    }
+    return data;
+}
+
+// ============================================
+// 2. MATERIALUSER (Materias)
+// ============================================
+
+/**
+ * Crear nueva materia
+ */
+export async function crearMateria(materiaData) {
+    const { admaterial, nameprof, horauser, descriptionmateria } = materiaData;
+    const { data, error } = await supabase
+        .from('materialuser')
+        .insert({
+            admaterial,
+            nameprof,
+            horauser,
+            descriptionmateria,
+            created_at: new Date()
+        })
+        .select()
+        .single();
+    
+    if (error) {
+        console.error('Error al crear materia:', error);
         return null;
     }
     return data;
 }
 
 /**
- * Obtener todos los usuarios
+ * Obtener todas las materias del usuario
+ */
+export async function obtenerMaterias() {
+    const { data, error } = await supabase
+        .from('materialuser')
+        .select('*')
+        .order('created_at', { ascending: false });
+    
+    if (error) {
+        console.error('Error al obtener materias:', error);
+        return [];
+    }
+    return data;
+}
+
+/**
+ * Obtener materia por ID
  */
 export async function obtenerTodosUsuarios() {
     const { data, error } = await supabase

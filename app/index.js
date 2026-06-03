@@ -77,6 +77,11 @@ import { methods as authorization } from "./middlewares/authorization.js";
 import { methods as cuaderno } from "./controllers/cuaderno.controller.js";
 import { methods as subjects } from "./controllers/subjects.controller.js";
 import { methods as profile } from "./controllers/profile.controller.js";
+import { methods as profiledate } from "./controllers/profiledate.controller.js";
+import { methods as materialuser } from "./controllers/materialuser.controller.js";
+import { methods as bookdigital } from "./controllers/bookdigital.controller.js";
+import { methods as gruppro } from "./controllers/gruppro.controller.js";
+import { methods as tareapro } from "./controllers/tareapro.controller.js";
 
 // Función de prueba de conexión a Supabase
 async function testSupabaseConnection() {
@@ -323,3 +328,102 @@ app.get("/api/perfil", profile.obtenerPerfil);
 app.put("/api/perfil", profile.actualizarPerfil);
 
 console.log('✅ Rutas de Perfil inicializadas');
+
+// ============================================================
+// 👤 RUTAS DE PROFILEDATE (Nuevas tablas personalizadas)
+// ============================================================
+
+// GET /api/profiledate - Obtener perfil personalizado
+app.get("/api/profiledate", profiledate.obtenerPerfil);
+
+// PUT /api/profiledate - Actualizar perfil personalizado
+app.put("/api/profiledate", profiledate.actualizarPerfil);
+
+console.log('✅ Rutas de ProfileDate inicializadas');
+
+// ============================================================
+// 📚 RUTAS DE MATERIALUSER (Nuevas materias)
+// ============================================================
+
+// POST /api/materialuser/crear - Crear nueva materia
+app.post("/api/materialuser/crear", materialuser.crearMateria);
+
+// GET /api/materialuser - Obtener todas las materias del usuario
+app.get("/api/materialuser", materialuser.obtenerMaterias);
+
+// GET /api/materialuser/:id - Obtener una materia específica
+app.get("/api/materialuser/:id", materialuser.obtenerMateria);
+
+// PUT /api/materialuser/:id - Actualizar una materia
+app.put("/api/materialuser/:id", materialuser.actualizarMateria);
+
+// DELETE /api/materialuser/:id - Eliminar una materia
+app.delete("/api/materialuser/:id", materialuser.eliminarMateria);
+
+console.log('✅ Rutas de MaterialUser inicializadas');
+
+// ============================================================
+// 📖 RUTAS DE BOOKDIGITAL (Cuaderno Digital Nuevo)
+// ============================================================
+
+// POST /api/bookdigital/guardar - Guardar entrada en cuaderno
+app.post("/api/bookdigital/guardar", bookdigital.guardarEntrada);
+
+// GET /api/bookdigital - Obtener todas las entradas
+app.get("/api/bookdigital", bookdigital.obtenerEntradas);
+
+// GET /api/bookdigital/:materialuser_id - Obtener entradas por materia
+app.get("/api/bookdigital/:materialuser_id", bookdigital.obtenerEntradasMateria);
+
+// PUT /api/bookdigital/:id - Actualizar entrada
+app.put("/api/bookdigital/:id", bookdigital.actualizarEntrada);
+
+// DELETE /api/bookdigital/:id - Eliminar entrada
+app.delete("/api/bookdigital/:id", bookdigital.eliminarEntrada);
+
+// GET /api/bookhistory - Obtener historial
+app.get("/api/bookhistory", bookdigital.obtenerHistorial);
+
+console.log('✅ Rutas de BookDigital inicializadas');
+
+// ============================================================
+// 👥 RUTAS DE GRUPPRO (Grupos)
+// ============================================================
+
+// POST /api/gruppro/crear - Crear nuevo grupo
+app.post("/api/gruppro/crear", gruppro.crearGrupo);
+
+// GET /api/gruppro - Obtener todos los grupos
+app.get("/api/gruppro", gruppro.obtenerGrupos);
+
+// GET /api/gruppro/:id - Obtener un grupo específico
+app.get("/api/gruppro/:id", gruppro.obtenerGrupo);
+
+// PUT /api/gruppro/:id - Actualizar un grupo
+app.put("/api/gruppro/:id", gruppro.actualizarGrupo);
+
+// DELETE /api/gruppro/:id - Eliminar un grupo
+app.delete("/api/gruppro/:id", gruppro.eliminarGrupo);
+
+console.log('✅ Rutas de Gruppro inicializadas');
+
+// ============================================================
+// ✅ RUTAS DE TAREAPRO (Tareas)
+// ============================================================
+
+// POST /api/tareapro/crear - Crear nueva tarea
+app.post("/api/tareapro/crear", tareapro.crearTarea);
+
+// GET /api/tareapro - Obtener todas las tareas
+app.get("/api/tareapro", tareapro.obtenerTareas);
+
+// GET /api/tareapro/:id - Obtener una tarea específica
+app.get("/api/tareapro/:id", tareapro.obtenerTarea);
+
+// PUT /api/tareapro/:id - Actualizar una tarea
+app.put("/api/tareapro/:id", tareapro.actualizarTarea);
+
+// DELETE /api/tareapro/:id - Eliminar una tarea
+app.delete("/api/tareapro/:id", tareapro.eliminarTarea);
+
+console.log('✅ Rutas de Tareapro inicializadas');

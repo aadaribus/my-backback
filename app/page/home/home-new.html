@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="description" content="Página principal de tu mochila digital">
+    <meta name="theme-color" content="#222">
+    <title>My Mochila - Nuevo</title>
+    <link rel="stylesheet" href="/stylehome.css">
+</head>
+ <body>
+<div class="container">
+    <nav class="menu" role="navigation" aria-label="Navegación principal">
+      <div class="logo">
+        <h1>My Mochila</h1>
+        <p></p>
+      </div>
+      <span class="user-info info" id="user-info" aria-label="Información del usuario">
+      <span class="user-name" id="user-name">Usuario</span>
+    </span>
+      
+      <ul class="menu-options">
+        <li><a href="#" data-modal="materia">Agregar Materia</a></li>
+        <li><a href="#" data-modal="historial">Historial</a></li>
+        <li><a href="#" data-modal="grupos">Grupos</a></li>
+        <li><a href="#" data-modal="tareas">Tareas</a></li>
+        <li><a href="#" data-modal="perfil">Perfil</a></li>
+        <li><a href="#" data-modal="configuracion">Configuración</a></li>
+        <li><a href="#" data-modal="contacto">Contacto</a></li>
+      </ul>
+      <div class="icons">
+       <button class="logout-btn" id="notebookBtn" aria-label="Cuaderno Digital" type="button">
+          <img src="/assets/inicio-mat.png" alt="Cuaderno Digital" class="logout-icon" loading="lazy">
+        </button>
+        <button class="logout-btn" id="aboutBtn" aria-label="Sobre nosotros" type="button">
+          <img src="/assets/acerca-de.png" alt="Sobre nosotros" class="logout-icon" loading="lazy">
+        </button>
+        <button class="logout-btn" id="logoutBtn" aria-label="Cerrar sesión" type="button">
+          <img src="/assets/cerrar.png" alt="Cerrar sesión" class="logout-icon" loading="lazy">
+        </button>
+      </div>
+      <div class="chat">
+        💬 <span class="badge">1</span>
+      </div>
+    </nav>
+  </div>
+
+<!-- Modal Overlay -->
+  <div class="modal-overlay" id="modalOverlay"></div>
+
+  <!-- Modal: Agregar Materia -->
+  <div class="modal" id="materiaModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Agregar Materia</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form class="modal-form">
+        <input type="text" placeholder="Nombre de la materia" required>
+        <input type="text" placeholder="Profesor" required>
+        <input type="text" placeholder="Horario" required>
+        <textarea placeholder="Descripción"></textarea>
+        <div class="modal-buttons">
+          <button type="submit" class="btn-submit">Guardar</button>
+          <button type="button" class="btn-cancel">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Cuaderno Digital -->
+  <div class="modal" id="notebookModal">
+    <div class="modal-content" style="max-width: 95%; max-height: 95vh; overflow-y: auto;">
+      <div class="modal-header">
+        <h2>Cuaderno Digital</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <select name="materia" style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 4px; border: 1px solid #ccc;">
+          <option value="">Selecciona una materia</option>
+        </select>
+
+        <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+          <h4>Herramientas de Formateo</h4>
+          <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+            <button type="button" onclick="document.execCommand('bold')" style="padding: 8px 12px; background: #5e3a22; color: white; border: none; border-radius: 4px; cursor: pointer;"><b>Negrita</b></button>
+            <button type="button" onclick="document.execCommand('italic')" style="padding: 8px 12px; background: #5e3a22; color: white; border: none; border-radius: 4px; cursor: pointer;"><i>Cursiva</i></button>
+            <button type="button" onclick="document.execCommand('underline')" style="padding: 8px 12px; background: #5e3a22; color: white; border: none; border-radius: 4px; cursor: pointer;"><u>Subrayar</u></button>
+            <button type="button" onclick="iniciarCamara('photo')" style="padding: 8px 12px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">📷 Cámara</button>
+            <button type="button" onclick="iniciarMicrófono()" style="padding: 8px 12px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">🎤 Micrófono</button>
+          </div>
+        </div>
+
+        <div id="cameraPreview" style="display: none; width: 100%; max-height: 300px; margin-bottom: 10px; border-radius: 8px;">
+          <video style="width: 100%; border-radius: 8px;" autoplay></video>
+        </div>
+
+        <div id="recordingIndicator" style="display: none; padding: 10px; background: #ff6b6b; color: white; border-radius: 4px; margin-bottom: 10px; text-align: center; font-weight: bold;">
+          🔴 Grabando...
+        </div>
+
+        <button type="button" id="capturePhotoBtn" style="display: none; padding: 8px 12px; background: #ffc107; color: black; border: none; border-radius: 4px; cursor: pointer; width: 100%; margin-bottom: 10px;">Capturar Foto</button>
+
+        <div id="notebookEditor" contenteditable="true" style="width: 100%; min-height: 250px; border: 2px solid #ddd; border-radius: 8px; padding: 15px; background: white; margin-bottom: 15px; font-family: Arial, sans-serif;">Escribe aquí tus notas...</div>
+
+        <div class="modal-buttons">
+          <button type="button" id="saveNotebookBtn" class="btn-submit">Guardar en Historial</button>
+          <button type="button" class="btn-cancel">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Historial -->
+  <div class="modal" id="historialModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Historial de Cuaderno</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <ul class="history-list" style="margin: 20px 0; list-style: none; padding: 0; max-height: 400px; overflow-y: auto;">
+          <li style="padding: 10px; text-align: center; color: #999;">Cargando historial...</li>
+        </ul>
+        <div class="modal-buttons">
+          <button type="button" class="btn-cancel">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Grupos -->
+  <div class="modal" id="gruposModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Crear Grupo</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form class="modal-form">
+        <input type="text" placeholder="Nombre del grupo" required>
+        <textarea placeholder="Descripción del grupo"></textarea>
+        <input type="email" placeholder="Email del miembro a invitar" required>
+        <div class="modal-buttons">
+          <button type="submit" class="btn-submit">Crear Grupo</button>
+          <button type="button" class="btn-cancel">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Tareas -->
+  <div class="modal" id="tareasModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Crear Tarea</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form class="modal-form">
+        <input type="text" placeholder="Título de la tarea" required>
+        <textarea placeholder="Descripción de la tarea" required></textarea>
+        <label>Fecha de entrega:</label>
+        <input type="date" required>
+        <div class="modal-buttons">
+          <button type="submit" class="btn-submit">Crear Tarea</button>
+          <button type="button" class="btn-cancel">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Perfil -->
+  <div class="modal" id="perfilModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Mi Perfil</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form class="modal-form">
+        <input type="text" placeholder="Nombre completo">
+        <input type="email" placeholder="Correo">
+        <input type="tel" placeholder="Teléfono">
+        <input type="text" placeholder="Universidad">
+        <div class="modal-buttons">
+          <button type="submit" class="btn-submit">Guardar Cambios</button>
+          <button type="button" class="btn-cancel">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Configuración -->
+  <div class="modal" id="configuracionModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Configuración</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>⚙️ Opciones de configuración disponibles:</p>
+        <ul style="margin: 20px 0; list-style: none; padding: 0;">
+          <li style="padding: 10px; border-bottom: 1px solid #ddd;">📱 Notificaciones</li>
+          <li style="padding: 10px; border-bottom: 1px solid #ddd;">🌙 Tema oscuro</li>
+          <li style="padding: 10px; border-bottom: 1px solid #ddd;">🔐 Privacidad</li>
+          <li style="padding: 10px;">ℹ️ Acerca de</li>
+        </ul>
+        <div class="modal-buttons">
+          <button type="button" class="btn-cancel">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Contacto -->
+  <div class="modal" id="contactoModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Contacto</h2>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>📧 Email: soporte@mimochila.com</p>
+        <p>📱 WhatsApp: +34 XXX XXX XXX</p>
+        <p>🐦 Twitter: @mimochilaapp</p>
+        <p>📘 Facebook: Mi Mochila</p>
+        <div class="modal-buttons">
+          <button type="button" class="btn-cancel">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="pie">
+    <p>&copy; 2026 Aadaribusweb. Todos los derechos reservados.</p>
+  </footer>
+
+  <script src="/home-new.js" defer></script>
+</body>
+</html>
