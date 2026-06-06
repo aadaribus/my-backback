@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node app/index.js",
-    "dev": "nodemon --exec node app/index.js"
+    "dev": "nodemon --exec node app/index.js",
+    "validate": "node validate-project.js"
   },
   "keywords": [],
   "author": "",
