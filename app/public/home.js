@@ -1,14 +1,13 @@
-// Obtener y mostrar nombre del usuario
+/* ==========================================================================
+   🔄 CARGA DE DATOS DE USUARIO
+   ========================================================================== */
 async function cargarNombreUsuario() {
   try {
     const response = await fetch('/api/usuario', {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       credentials: 'include'
     });
-
     if (response.ok) {
       const data = await response.json();
       const userNameElement = document.getElementById('user-name');
@@ -23,121 +22,117 @@ async function cargarNombreUsuario() {
   }
 }
 
-// Cargar nombre del usuario cuando carga la página
 document.addEventListener('DOMContentLoaded', () => {
   cargarNombreUsuario();
   initializeModals();
 });
 
-// ========== MODALS FUNCTIONALITY ==========
-
+/* ==========================================================================
+   🪟 FUNCIONALIDAD DE MODALES PREMIUM (Con Animaciones)
+   ========================================================================== */
 const modalOverlay = document.getElementById('modalOverlay');
 
-// Abrir modal
 function openModal(modalId) {
   const modal = document.getElementById(modalId);
   if (modal) {
-    modal.classList.add('active');
-    modalOverlay.classList.add('active');
+    // Primero cambiamos el display por JS si es necesario, pero usando clases para CSS
+    modalOverlay.style.display = 'block';
+    modal.style.display = 'block';
+    
+    // Pequeño delay para permitir que la animación CSS (fade-in / scale) se ejecute
+    setTimeout(() => {
+      modalOverlay.classList.add('active');
+      modal.classList.add('active');
+    }, 10);
   }
 }
 
-// Cerrar modal
 function closeModal(modalId) {
   const modal = document.getElementById(modalId);
   if (modal) {
     modal.classList.remove('active');
-  }
-  // Verificar si hay otros modales abiertos
-  const allModals = document.querySelectorAll('.modal.active');
-  if (allModals.length === 0) {
-    modalOverlay.classList.remove('active');
+    
+    const allModals = document.querySelectorAll('.modal.active');
+    if (allModals.length === 0) {
+      modalOverlay.classList.remove('active');
+    }
+
+    // Ocultamos completamente del layout después de terminar la transición CSS (300ms)
+    setTimeout(() => {
+      modal.style.display = 'none';
+      if (allModals.length === 0) modalOverlay.style.display = 'none';
+    }, 300);
   }
 }
 
-// Inicializar eventos de modales
 function initializeModals() {
-  // Event listeners para abrir modales desde el menu
+  // Abrir modales desde el menú principal
   const menuLinks = document.querySelectorAll('.menu-options a[data-modal]');
   menuLinks.forEach(link => {
     link.addEventListener('click', (e) => {
       e.preventDefault();
       const modalType = link.getAttribute('data-modal');
-      const modalId = modalType + 'Modal';
-      openModal(modalId);
+      openModal(modalType + 'Modal');
     });
   });
 
-  // Event listeners para cerrar modales
+  // Botones de cierre (X)
   const closeButtons = document.querySelectorAll('.modal-close');
   closeButtons.forEach(button => {
     button.addEventListener('click', () => {
-      const modalId = button.getAttribute('data-close');
+      const modalId = button.getAttribute('data-close') || button.closest('.modal').id;
       closeModal(modalId);
     });
   });
 
-  // Event listeners para botones cancelar
+  // Botones de Cancelar en formularios
   const cancelButtons = document.querySelectorAll('.btn-cancel');
   cancelButtons.forEach(button => {
     button.addEventListener('click', () => {
-      const modalId = button.getAttribute('data-close');
+      const modalId = button.getAttribute('data-close') || button.closest('.modal').id;
       closeModal(modalId);
     });
   });
 
-  // Cerrar modal al hacer clic en el overlay
+  // Cerrar al hacer clic en el fondo difuminado
   modalOverlay.addEventListener('click', () => {
     const allModals = document.querySelectorAll('.modal.active');
-    allModals.forEach(modal => {
-      modal.classList.remove('active');
-    });
-    modalOverlay.classList.remove('active');
+    allModals.forEach(modal => closeModal(modal.id));
   });
 
-  // Prevenir que el click en el contenido del modal cierre el modal
+  // Detener propagación para no cerrar el modal al hacer clic por dentro
   const modalContents = document.querySelectorAll('.modal-content');
   modalContents.forEach(content => {
-    content.addEventListener('click', (e) => {
-      e.stopPropagation();
-    });
+    content.addEventListener('click', (e) => e.stopPropagation());
   });
 
-  // Cerrar modal con tecla ESC
+  // Cerrar con la tecla ESC
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       const allModals = document.querySelectorAll('.modal.active');
-      allModals.forEach(modal => {
-        modal.classList.remove('active');
-      });
-      modalOverlay.classList.remove('active');
+      allModals.forEach(modal => closeModal(modal.id));
     }
   });
 }
 
-// ========== END MODALS FUNCTIONALITY ==========
-
-// ========== CUADERNO DIGITAL FUNCTIONALITY ==========
-
+/* ==========================================================================
+   📝 FUNCIONALIDAD: CUADERNO DIGITAL
+   ========================================================================== */
 const notebookBtn = document.getElementById('notebookBtn');
-const notebookModal = document.getElementById('notebookModal');
 const notebookEditor = document.getElementById('notebookEditor');
 const dropZone = document.getElementById('dropZone');
 const notebookEntries = document.getElementById('notebookEntries');
 const saveNotebookBtn = document.getElementById('saveNotebook');
 
-let currentNotebookData = {
-  subject: 'Sin asignar',
-  entries: []
-};
+let currentNotebookData = { subject: 'Sin asignar', entries: [] };
 
-// Archivo inputs
+// Inputs ocultos de archivos
 const fileInput = document.getElementById('fileInput');
 const imageInput = document.getElementById('imageInput');
 const audioInput = document.getElementById('audioInput');
 const videoInput = document.getElementById('videoInput');
 
-// Toolbar buttons
+// Botones de la barra de herramientas (Toolbar)
 const boldBtn = document.getElementById('boldBtn');
 const italicBtn = document.getElementById('italicBtn');
 const underlineBtn = document.getElementById('underlineBtn');
@@ -147,7 +142,6 @@ const audioBtn = document.getElementById('audioBtn');
 const videoBtn = document.getElementById('videoBtn');
 const clearBtn = document.getElementById('clearBtn');
 
-// Abrir cuaderno digital
 if (notebookBtn) {
   notebookBtn.addEventListener('click', () => {
     openModal('notebookModal');
@@ -155,272 +149,173 @@ if (notebookBtn) {
   });
 }
 
-// Guardar cuaderno digital
 if (saveNotebookBtn) {
-  saveNotebookBtn.addEventListener('click', () => {
-    saveNotebookEntry();
-  });
+  saveNotebookBtn.addEventListener('click', () => saveNotebookEntry());
 }
 
-// Toolbar - Formateo de texto
-if (boldBtn) {
-  boldBtn.addEventListener('click', () => document.execCommand('bold', false, null));
-}
-if (italicBtn) {
-  italicBtn.addEventListener('click', () => document.execCommand('italic', false, null));
-}
-if (underlineBtn) {
-  underlineBtn.addEventListener('click', () => document.execCommand('underline', false, null));
-}
-if (clearBtn) {
-  clearBtn.addEventListener('click', () => document.execCommand('removeFormat', false, null));
-}
+// Formateadores nativos del editor
+if (boldBtn) boldBtn.addEventListener('click', () => document.execCommand('bold', false, null));
+if (italicBtn) italicBtn.addEventListener('click', () => document.execCommand('italic', false, null));
+if (underlineBtn) underlineBtn.addEventListener('click', () => document.execCommand('underline', false, null));
+if (clearBtn) clearBtn.addEventListener('click', () => document.execCommand('removeFormat', false, null));
 
-// Botones de archivo
-if (fileBtn) {
-  fileBtn.addEventListener('click', () => fileInput.click());
-}
-if (imageBtn) {
-  imageBtn.addEventListener('click', () => imageInput.click());
-}
-if (audioBtn) {
-  audioBtn.addEventListener('click', () => audioInput.click());
-}
-if (videoBtn) {
-  videoBtn.addEventListener('click', () => videoInput.click());
-}
+// Desencadenadores de clics para archivos
+if (fileBtn) fileBtn.addEventListener('click', () => fileInput.click());
+if (imageBtn) imageBtn.addEventListener('click', () => imageInput.click());
+if (audioBtn) audioBtn.addEventListener('click', () => audioInput.click());
+if (videoBtn) videoBtn.addEventListener('click', () => videoInput.click());
 
-// Event listeners para inputs de archivo
-if (fileInput) {
-  fileInput.addEventListener('change', (e) => handleFileUpload(e.target.files, 'file'));
-}
-if (imageInput) {
-  imageInput.addEventListener('change', (e) => handleFileUpload(e.target.files, 'image'));
-}
-if (audioInput) {
-  audioInput.addEventListener('change', (e) => handleFileUpload(e.target.files, 'audio'));
-}
-if (videoInput) {
-  videoInput.addEventListener('change', (e) => handleFileUpload(e.target.files, 'video'));
-}
+// Listeners de carga de archivos
+if (fileInput) fileInput.addEventListener('change', (e) => handleFileUpload(e.target.files, 'file'));
+if (imageInput) imageInput.addEventListener('change', (e) => handleFileUpload(e.target.files, 'image'));
+if (audioInput) audioInput.addEventListener('change', (e) => handleFileUpload(e.target.files, 'audio'));
+if (videoInput) videoInput.addEventListener('change', (e) => handleFileUpload(e.target.files, 'video'));
 
-// Drag & Drop
+// Zona de Drag & Drop
 if (dropZone) {
   dropZone.addEventListener('dragover', (e) => {
     e.preventDefault();
     dropZone.classList.add('drag-over');
   });
-
-  dropZone.addEventListener('dragleave', () => {
-    dropZone.classList.remove('drag-over');
-  });
-
+  
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+  
   dropZone.addEventListener('drop', (e) => {
     e.preventDefault();
     dropZone.classList.remove('drag-over');
     const files = e.dataTransfer.files;
-    
-    // Determinar tipo de archivo
-    if (files[0]) {
+    if (files && files[0]) {
       const fileType = files[0].type;
-      if (fileType.startsWith('image/')) {
-        handleFileUpload(files, 'image');
-      } else if (fileType.startsWith('audio/')) {
-        handleFileUpload(files, 'audio');
-      } else if (fileType.startsWith('video/')) {
-        handleFileUpload(files, 'video');
-      } else {
-        handleFileUpload(files, 'file');
-      }
+      if (fileType.startsWith('image/')) handleFileUpload(files, 'image');
+      else if (fileType.startsWith('audio/')) handleFileUpload(files, 'audio');
+      else if (fileType.startsWith('video/')) handleFileUpload(files, 'video');
+      else handleFileUpload(files, 'file');
     }
   });
 }
 
-// Manejar carga de archivos
 function handleFileUpload(files, type) {
   if (files.length === 0) return;
-
   const file = files[0];
   const reader = new FileReader();
-
-  reader.onload = (e) => {
-    insertMediaToEditor(e.target.result, type, file.name);
-  };
-
-  if (type === 'file') {
-    reader.readAsDataURL(file);
-  } else {
-    reader.readAsDataURL(file);
-  }
+  reader.onload = (e) => insertMediaToEditor(e.target.result, type, file.name);
+  reader.readAsDataURL(file);
 }
 
-// Insertar media en el editor
 function insertMediaToEditor(data, type, filename) {
   let element = '';
-  
   switch(type) {
     case 'image':
-      element = `<img src="${data}" alt="Imagen" style="max-width: 100%; max-height: 300px; margin: 10px 0; border-radius: 4px;">`;
+      element = `<img src="${data}" alt="Imagen" style="max-width: 100%; max-height: 300px; margin: 10px 0; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">`;
       break;
     case 'audio':
-      element = `<audio controls style="margin: 10px 0; width: 100%;"><source src="${data}"></audio>`;
+      element = `<audio controls style="margin: 10px 0; width: 100%; border-radius: 8px;"><source src="${data}"></audio>`;
       break;
     case 'video':
-      element = `<video controls style="max-width: 100%; max-height: 400px; margin: 10px 0; border-radius: 4px;"><source src="${data}"></video>`;
+      element = `<video controls style="max-width: 100%; max-height: 400px; margin: 10px 0; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);"><source src="${data}"></video>`;
       break;
     case 'file':
-      element = `<a href="${data}" download="${filename}" style="display: inline-block; background: #5e3a22; color: white; padding: 8px 12px; border-radius: 4px; text-decoration: none; margin: 10px 0; font-size: 13px;">📥 ${filename}</a>`;
+      element = `<a href="${data}" download="${filename}" style="display: inline-flex; align-items: center; background: var(--primary, #8b5cf6); color: white; padding: 10px 16px; border-radius: 8px; text-decoration: none; margin: 10px 0; font-size: 14px; font-weight: 500; gap: 8px; box-shadow: 0 4px 10px rgba(138, 92, 246, 0.2);">📥 ${filename}</a>`;
       break;
   }
-
-  // Insertar en el editor
   if (notebookEditor && element) {
     notebookEditor.focus();
     document.execCommand('insertHTML', false, element);
   }
 }
 
-// Guardar entrada del cuaderno con timestamp
 function saveNotebookEntry() {
   const content = notebookEditor.innerHTML;
-  
   if (!content || content.trim() === '<br>') {
-    alert('Por favor escribe algo en el cuaderno');
+    Swal.fire({ icon: 'warning', title: 'Espacio vacío', text: 'Por favor escribe algo en tu cuaderno.', background: '#1a1435', color: '#fff', confirmButtonColor: '#8b5cf6' });
     return;
   }
 
-  // Crear entrada con timestamp
   const now = new Date();
-  const timestamp = now.toLocaleString('es-ES', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit'
-  });
+  const timestamp = now.toLocaleString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const entry = { id: Date.now(), timestamp: timestamp, content: content, subject: currentNotebookData.subject };
 
-  const entry = {
-    id: Date.now(),
-    timestamp: timestamp,
-    content: content,
-    subject: currentNotebookData.subject
-  };
-
-  // Agregar entrada al array
   currentNotebookData.entries.unshift(entry);
-
-  // Mostrar entrada en la UI
   displayEntry(entry);
 
-  // Guardar en localStorage
   localStorage.setItem(`notebook_${currentNotebookData.subject}`, JSON.stringify(currentNotebookData));
-
-  // Enviar al servidor (si existe endpoint)
   saveToServer(entry);
-
-  // Limpiar editor
   notebookEditor.innerHTML = '';
 
-  alert('✅ Entrada guardada correctamente');
+  Swal.fire({ icon: 'success', title: '¡Guardado!', text: 'Entrada guardada en tu cuaderno digital.', background: '#1a1435', color: '#fff', confirmButtonColor: '#8b5cf6', timer: 2000, showConfirmButton: false });
 }
 
-// Mostrar entrada en la UI
 function displayEntry(entry) {
   const entryDiv = document.createElement('div');
   entryDiv.className = 'notebook-entry';
+  entryDiv.style = "background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);";
   entryDiv.innerHTML = `
-    <div class="entry-timestamp">📅 ${entry.timestamp}</div>
-    <div class="entry-content">${entry.content}</div>
+    <div class="entry-timestamp" style="font-size: 0.8rem; color: #06b6d4; font-weight: 500; margin-bottom: 8px;">📅 ${entry.timestamp}</div>
+    <div class="entry-content" style="color: #f3f4f6; font-size: 0.95rem; line-height: 1.5;">${entry.content}</div>
   `;
-
   notebookEntries.insertBefore(entryDiv, notebookEntries.firstChild);
 }
 
-// Cargar datos del cuaderno
 function loadNotebookData() {
-  // Aquí se cargará el nombre de la materia actual
-  // Por ahora, usamos un valor por defecto
   const subjectName = document.querySelector('.notebook-subject');
   if (subjectName) {
     currentNotebookData.subject = subjectName.textContent || 'Sin asignar';
   }
-
-  // Limpiar entradas
   notebookEntries.innerHTML = '';
   notebookEditor.innerHTML = '';
 
-  // Cargar del localStorage
   const saved = localStorage.getItem(`notebook_${currentNotebookData.subject}`);
   if (saved) {
     try {
       currentNotebookData = JSON.parse(saved);
-      // Mostrar todas las entradas guardadas
-      currentNotebookData.entries.forEach(entry => {
-        displayEntry(entry);
-      });
+      currentNotebookData.entries.forEach(entry => displayEntry(entry));
     } catch (e) {
       console.error('Error al cargar cuaderno:', e);
     }
   }
 }
 
-// ========== MATERIAS FUNCTIONALITY ==========
-
-// Manejador para guardar materia
+/* ==========================================================================
+   📚 FUNCIONALIDAD: AGREGAR MATERIAS
+   ========================================================================== */
 const materiaForm = document.querySelector('#materiaModal form');
 if (materiaForm) {
   materiaForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
     const name = materiaForm.querySelector('input[placeholder="Nombre de la materia"]').value;
     const professor = materiaForm.querySelector('input[placeholder="Profesor"]').value;
     const schedule = materiaForm.querySelector('input[placeholder="Horario"]').value;
     const description = materiaForm.querySelector('textarea[placeholder="Descripción"]').value;
 
     if (!name.trim()) {
-      alert('❌ Por favor ingresa el nombre de la materia');
+      Swal.fire({ icon: 'error', title: 'Falta información', text: 'Por favor ingresa el nombre de la materia.', background: '#1a1435', color: '#fff', confirmButtonColor: '#8b5cf6' });
       return;
     }
-
-    console.log('📚 Guardando materia:', name);
 
     try {
       const response = await fetch('/api/materias/crear', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({
-          name,
-          professor,
-          schedule,
-          description
-        })
+        body: JSON.stringify({ name, professor, schedule, description })
       });
-
       const data = await response.json();
-
       if (response.ok) {
-        console.log('✅ Materia guardada:', data.subject_id);
-        alert(`✅ Materia "${name}" creada exitosamente`);
+        Swal.fire({ icon: 'success', title: '¡Creada!', text: `Materia "${name}" creada exitosamente.`, background: '#1a1435', color: '#fff', confirmButtonColor: '#8b5cf6' });
         materiaForm.reset();
         closeModal('materiaModal');
       } else {
-        console.error('❌ Error:', data.error);
-        alert(`❌ Error: ${data.error}`);
+        Swal.fire({ icon: 'error', title: 'Error', text: data.error, background: '#1a1435', color: '#fff' });
       }
     } catch (error) {
-      console.error('❌ Error al guardar materia:', error);
-      alert('❌ Error al guardar materia: ' + error.message);
+      console.error('Error al guardar materia:', error);
     }
   });
 }
 
-// ========== PERFIL FUNCTIONALITY ==========
-
-// Cargar datos del perfil al abrir el modal
+/* ==========================================================================
+   👤 FUNCIONALIDAD: PERFIL DE USUARIO
+   ========================================================================== */
 const perfilLink = document.querySelector('a[data-modal="perfil"]');
 if (perfilLink) {
   perfilLink.addEventListener('click', async (e) => {
@@ -428,29 +323,19 @@ if (perfilLink) {
     try {
       const response = await fetch('/api/perfil', {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include'
       });
-
       if (response.ok) {
         const data = await response.json();
         const profile = data.profile;
 
-        // Llenar formulario con datos existentes
-        const fullNameInput = document.querySelector('#perfilModal input[placeholder="Nombre completo"]');
-        const emailInput = document.querySelector('#perfilModal input[placeholder="Correo electrónico"]');
-        const phoneInput = document.querySelector('#perfilModal input[placeholder="Teléfono"]');
-        const institutionInput = document.querySelector('#perfilModal input[placeholder="Universidad/Instituto"]');
-        const careerInput = document.querySelector('#perfilModal input[placeholder="Carrera"]');
-
-        if (fullNameInput) fullNameInput.value = profile.full_name || '';
-        if (emailInput) emailInput.value = profile.email || '';
-        if (phoneInput) phoneInput.value = profile.phone || '';
-        if (institutionInput) institutionInput.value = profile.institution || '';
-        if (careerInput) careerInput.value = profile.career || '';
-
+        document.querySelector('#perfilModal input[placeholder="Nombre completo"]').value = profile.full_name || '';
+        document.querySelector('#perfilModal input[placeholder="Correo electrónico"]').value = profile.email || '';
+        document.querySelector('#perfilModal input[placeholder="Teléfono"]').value = profile.phone || '';
+        document.querySelector('#perfilModal input[placeholder="Universidad/Instituto"]').value = profile.institution || '';
+        document.querySelector('#perfilModal input[placeholder="Carrera"]').value = profile.career || '';
+        
         openModal('perfilModal');
       }
     } catch (error) {
@@ -460,12 +345,10 @@ if (perfilLink) {
   });
 }
 
-// Manejador para actualizar perfil
 const perfilForm = document.querySelector('#perfilModal form');
 if (perfilForm) {
   perfilForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-
     const full_name = perfilForm.querySelector('input[placeholder="Nombre completo"]').value;
     const email = perfilForm.querySelector('input[placeholder="Correo electrónico"]').value;
     const phone = perfilForm.querySelector('input[placeholder="Teléfono"]').value;
@@ -473,89 +356,73 @@ if (perfilForm) {
     const career = perfilForm.querySelector('input[placeholder="Carrera"]').value;
 
     if (!full_name.trim()) {
-      alert('❌ Por favor ingresa tu nombre completo');
+      Swal.fire({ icon: 'error', title: 'Falta información', text: 'Por favor ingresa tu nombre completo.', background: '#1a1435', color: '#fff' });
       return;
     }
-
-    console.log('👤 Actualizando perfil');
 
     try {
       const response = await fetch('/api/perfil', {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({
-          full_name,
-          email,
-          phone,
-          institution,
-          career
-        })
+        body: JSON.stringify({ full_name, email, phone, institution, career })
       });
-
       const data = await response.json();
-
       if (response.ok) {
-        console.log('✅ Perfil actualizado');
-        alert('✅ Perfil actualizado exitosamente');
+        Swal.fire({ icon: 'success', title: 'Actualizado', text: 'Perfil actualizado exitosamente.', background: '#1a1435', color: '#fff', confirmButtonColor: '#8b5cf6' });
         closeModal('perfilModal');
       } else {
-        console.error('❌ Error:', data.error);
-        alert(`❌ Error: ${data.error}`);
+        Swal.fire({ icon: 'error', title: 'Error', text: data.error, background: '#1a1435', color: '#fff' });
       }
     } catch (error) {
-      console.error('❌ Error al actualizar perfil:', error);
-      alert('❌ Error al actualizar perfil: ' + error.message);
+      console.error('Error al actualizar perfil:', error);
     }
   });
 }
 
-// ========== END MATERIAS Y PERFIL =========
-
-// Guardar en servidor (placeholder)
 function saveToServer(entry) {
-  // Este endpoint deberá ser implementado en el backend
   fetch('/api/cuaderno/guardar', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      subject: entry.subject,
-      content: entry.content,
-      timestamp: entry.timestamp
-    })
-  }).catch(err => console.log('Nota: No hay conexión con el servidor', err));
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ subject: entry.subject, content: entry.content, timestamp: entry.timestamp })
+  }).catch(err => console.log('Nota: Modo offline o sin respuesta del servidor', err));
 }
 
-// ========== END CUADERNO DIGITAL FUNCTIONALITY ==========
-
-// Cerrar sesión al hacer clic en el botón de logout
+/* ==========================================================================
+   🚪 BOTONES ADICIONALES (Cerrar Sesión / Acerca de)
+   ========================================================================== */
 const logoutBtn = document.getElementById('logoutBtn');
 if (logoutBtn) {
   logoutBtn.addEventListener('click', async (event) => {
     event.preventDefault();
-    try {
-      const response = await fetch('/api/logout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      
-      if (response.ok) {
-        window.location.href = '/';
-      } else {
-        console.error('Error al cerrar sesión');
+    
+    const result = await Swal.fire({
+      title: '¿Cerrar sesión?',
+      text: "Tendrás que volver a autenticarte para entrar.",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: 'rgba(255,255,255,0.05)',
+      confirmButtonText: 'Sí, salir',
+      cancelButtonText: 'Cancelar',
+      background: '#1a1435',
+      color: '#fff'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const response = await fetch('/api/logout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        if (response.ok) window.location.href = '/';
+      } catch (error) {
+        console.error('Error en logout:', error);
       }
-    } catch (error) {
-      console.error('Error en logout:', error);
     }
   });
 }
-// Ir a la página About al hacer clic en el botón
+
 const aboutBtn = document.getElementById('aboutBtn');
 if (aboutBtn) {
   aboutBtn.addEventListener('click', (event) => {
