@@ -184,6 +184,10 @@ app.get("/home", authorization.soloLogueado, (req, res) =>
   res.sendFile(__dirname + "/page/home/home.html")
 );
 
+app.get("/materials", authorization.soloLogueado, (req, res) =>
+  res.sendFile(__dirname + "/page/home/materials.html")
+);
+
 app.post("/api/register", authentication.register);
 app.post("/api/login", authentication.login);
 app.post("/api/logout", (req, res) => {

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Materias | Mi Mochila Digital</title>
+  <link rel="stylesheet" href="/materials.css" />
+</head>
+<body>
+  <main class="materials-shell">
+    <section class="materials-header">
+      <div>
+        <p class="eyebrow">Mi mochila</p>
+        <h1>Mis materias</h1>
+        <p>Gestiona tus asignaturas y abre tu cuaderno digital desde cada tarjeta.</p>
+      </div>
+      <div class="materials-actions">
+        <a class="ghost-btn" href="/home">Volver al inicio</a>
+        <button class="primary-btn" id="openSubjectModal" type="button">+ Agregar materia</button>
+      </div>
+    </section>
+
+    <section class="materials-grid" id="subjectsGrid"></section>
+  </main>
+
+  <div class="modal-overlay" id="subjectModal">
+    <div class="modal-card">
+      <h2>Nueva materia</h2>
+      <p>Agrega una asignatura y se guardará solo para tu cuenta.</p>
+      <form class="modal-form" id="subjectForm">
+        <input type="text" name="name" placeholder="Nombre de la materia" required />
+        <input type="text" name="professor" placeholder="Profesor" />
+        <input type="text" name="schedule" placeholder="Horario" />
+        <textarea name="description" placeholder="Descripción"></textarea>
+        <div class="modal-actions">
+          <button class="secondary-btn" type="button" id="cancelSubjectModal">Cancelar</button>
+          <button class="primary-btn" type="submit">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="notebookModal">
+    <div class="modal-card notebook-modal">
+      <h2 id="notebookSubjectTitle">Cuaderno digital</h2>
+      <p>Tu contenido queda vinculado a la materia seleccionada y solo será visible para ti.</p>
+      <div class="toolbar">
+        <button class="toolbar-btn" type="button" data-command="bold">Bold</button>
+        <button class="toolbar-btn" type="button" data-command="italic">Italic</button>
+        <button class="toolbar-btn" type="button" data-command="underline">Underline</button>
+      </div>
+      <div class="notebook-editor" id="notebookEditor" contenteditable="true"></div>
+      <div class="modal-actions">
+        <button class="secondary-btn" type="button" id="closeNotebookModal">Cerrar</button>
+        <button class="primary-btn" type="button" id="saveNotebook">Guardar</button>
+      </div>
+      <div class="notebook-history" id="notebookHistory"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="editSubjectModal">
+    <div class="modal-card">
+      <h2>Editar materia</h2>
+      <p>Actualiza la información de esta asignatura.</p>
+      <form class="modal-form" id="editSubjectForm">
+        <input type="text" name="name" placeholder="Nombre de la materia" required />
+        <input type="text" name="professor" placeholder="Profesor" />
+        <input type="text" name="schedule" placeholder="Horario" />
+        <textarea name="description" placeholder="Descripción"></textarea>
+        <div class="modal-actions">
+          <button class="secondary-btn" type="button" id="cancelEditSubjectModal">Cancelar</button>
+          <button class="primary-btn" type="submit">Guardar cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/materials.js"></script>
+</body>
+</html>

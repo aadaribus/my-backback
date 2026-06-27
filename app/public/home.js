@@ -169,8 +169,7 @@ const clearBtn = document.getElementById('clearBtn');
 
 if (notebookBtn) {
   notebookBtn.addEventListener('click', () => {
-    openModal('notebookModal');
-    loadNotebookData();
+    window.location.href = '/materials';
   });
 }
 
