@@ -25,7 +25,32 @@ async function cargarNombreUsuario() {
 document.addEventListener('DOMContentLoaded', () => {
   cargarNombreUsuario();
   initializeModals();
+  initializeThemeToggle();
 });
+
+function initializeThemeToggle() {
+  const darkModeToggle = document.getElementById('darkModeToggle');
+
+  function applyTheme(theme) {
+    const isDark = theme === 'dark';
+    document.body.classList.toggle('dark-mode', isDark);
+    document.body.classList.toggle('light-mode', !isDark);
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    if (darkModeToggle) {
+      darkModeToggle.checked = isDark;
+    }
+    localStorage.setItem('mi-mochila-theme', isDark ? 'dark' : 'light');
+  }
+
+  const savedTheme = localStorage.getItem('mi-mochila-theme');
+  applyTheme(savedTheme || 'dark');
+
+  if (darkModeToggle) {
+    darkModeToggle.addEventListener('change', (event) => {
+      applyTheme(event.target.checked ? 'dark' : 'light');
+    });
+  }
+}
 
 /* ==========================================================================
    🪟 FUNCIONALIDAD DE MODALES PREMIUM (Con Animaciones)
@@ -395,29 +420,38 @@ const logoutBtn = document.getElementById('logoutBtn');
 if (logoutBtn) {
   logoutBtn.addEventListener('click', async (event) => {
     event.preventDefault();
-    
-    const result = await Swal.fire({
-      title: '¿Cerrar sesión?',
-      text: "Tendrás que volver a autenticarte para entrar.",
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#ef4444',
-      cancelButtonColor: 'rgba(255,255,255,0.05)',
-      confirmButtonText: 'Sí, salir',
-      cancelButtonText: 'Cancelar',
-      background: '#1a1435',
-      color: '#fff'
-    });
 
-    if (result.isConfirmed) {
+    const confirmLogout = window.Swal && typeof window.Swal.fire === 'function'
+      ? await window.Swal.fire({
+          title: '¿Cerrar sesión?',
+          text: 'Tendrás que volver a autenticarte para entrar.',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#ef4444',
+          cancelButtonColor: 'rgba(255,255,255,0.05)',
+          confirmButtonText: 'Sí, salir',
+          cancelButtonText: 'Cancelar',
+          background: '#1a1435',
+          color: '#fff'
+        })
+      : { isConfirmed: window.confirm('¿Cerrar sesión?') };
+
+    if (confirmLogout.isConfirmed) {
       try {
+        document.cookie = 'jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;';
         const response = await fetch('/api/logout', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include'
         });
-        if (response.ok) window.location.href = '/';
+        if (response.ok || response.status === 401 || response.status === 403) {
+          window.location.href = '/';
+        } else {
+          window.location.href = '/';
+        }
       } catch (error) {
         console.error('Error en logout:', error);
+        window.location.href = '/';
       }
     }
   });

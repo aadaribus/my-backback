@@ -21,6 +21,18 @@
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+body.light-mode {
+  --bg-gradient: linear-gradient(135deg, #f7f9ff 0%, #edf4ff 50%, #f4f7fb 100%);
+  --glass-bg: rgba(255, 255, 255, 0.78);
+  --glass-border: rgba(15, 23, 42, 0.12);
+  --glass-accent-border: rgba(124, 58, 237, 0.22);
+  --text-main: #111827;
+  --text-muted: #4b5563;
+  --primary: #7c3aed;
+  --primary-hover: #6d28d9;
+  --accent-cyan: #0891b2;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -48,6 +60,48 @@ body {
   justify-content: center;
   align-items: center;
   overflow-x: hidden;
+  transition: var(--transition);
+}
+
+body.light-mode {
+  background: linear-gradient(135deg, rgba(247, 249, 255, 0.95), rgba(237, 244, 255, 0.95));
+}
+
+body.light-mode .menu,
+body.light-mode .modal-content,
+body.light-mode .notebook-editor,
+body.light-mode .drop-zone {
+  background: var(--glass-bg);
+  color: var(--text-main);
+  border-color: var(--glass-border);
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+}
+
+body.light-mode .menu-options li a,
+body.light-mode .user-info,
+body.light-mode .btn-cancel,
+body.light-mode .toolbar-btn {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.75);
+  border-color: var(--glass-border);
+}
+
+body.light-mode .modal-form input[type="text"],
+body.light-mode .modal-form input[type="email"],
+body.light-mode .modal-form input[type="tel"],
+body.light-mode .modal-form input[type="date"],
+body.light-mode .modal-form select,
+body.light-mode .modal-form textarea {
+  background: rgba(255, 255, 255, 0.9);
+  color: #111827;
+  border-color: var(--glass-border);
+}
+
+body.light-mode .modal-form input:focus,
+body.light-mode .modal-form select:focus,
+body.light-mode .modal-form textarea:focus {
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.16);
 }
 
 /* ==========================================================================
