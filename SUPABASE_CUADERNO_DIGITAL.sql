@@ -264,11 +264,11 @@ EXECUTE FUNCTION create_notebook_on_subject_insert();
 -- Ejemplo de inserción (reemplaza el UUID con el tuyo)
 INSERT INTO subjects (user_id, name, professor, schedule, description)
 VALUES (
-  'tu-user-uuid-aqui',
+  'db703907-39c5-497f-bdf9-fcb2aa9194f6',
   'Matemáticas',
-  'Prof. Juan García',
+  'Prof. aaron rivas',
   'Lunes-Miércoles 10:00-12:00',
-  'Cálculo integral y diferencial'
+  'Cálculo integral y diferencial aadaribus'
 );
 
 -- Esto automáticamente creará un cuaderno associated
