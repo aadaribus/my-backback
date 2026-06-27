@@ -87,24 +87,51 @@ import { methods as tareapro } from "./controllers/tareapro.controller.js";
 async function testSupabaseConnection() {
   try {
     console.log('\n📡 Probando conexión a Supabase...');
-    const { data, error } = await supabase
-      .from('users')
-      .select('count', { count: 'exact' })
-      .limit(1);
 
-    if (error) {
-      throw new Error(error.message);
+    const requiredTables = [
+      'users',
+      'subjects',
+      'notebooks',
+      'notebook_entries',
+      'notebook_media',
+      'user_profiles',
+      'profiledate',
+      'materialuser',
+      'bookdigital',
+      'gruppro',
+      'tareapro'
+    ];
+
+    const missingTables = [];
+
+    for (const tableName of requiredTables) {
+      const { error } = await supabase
+        .from(tableName)
+        .select('*')
+        .limit(1);
+
+      if (error && (error.message.includes('Could not find the table') || error.code === '42P01')) {
+        missingTables.push(tableName);
+      } else if (error) {
+        console.warn(`⚠️ Tabla "${tableName}" reportó un error: ${error.message}`);
+      }
+    }
+
+    if (missingTables.length > 0) {
+      console.error('⚠️ TABLAS FALTANTES EN SUPABASE:', missingTables.join(', '));
+      console.error('   Ejecuta los scripts SQL de SUPABASE_CUADERNO_DIGITAL.sql y SUPABASE_NUEVAS_TABLAS.sql en el SQL Editor de Supabase.');
+      return false;
     }
 
     console.log('✅ CONEXIÓN A SUPABASE: EXITOSA');
-    console.log('   └─ Tabla "users" accesible');
+    console.log('   └─ Todas las tablas requeridas están accesibles');
     return true;
   } catch (error) {
     console.error('❌ FALLO EN CONEXIÓN A SUPABASE:', error.message);
     console.error('   └─ Verifica que:');
     console.error('      1. SUPABASE_URL sea correcto');
-    console.error('      2. SUPABASE_ANON_KEY sea válida');
-    console.error('      3. La tabla "users" exista en Supabase');
+    console.error('      2. SUPABASE_ANON_KEY o SUPABASE_SERVICE_ROLE_KEY sea válida');
+    console.error('      3. Las tablas existan en Supabase');
     console.error('      4. Tengas acceso de lectura a la tabla');
     return false;
   }
@@ -236,28 +263,42 @@ app.get("/ping-supabase", async (req, res) => {
       });
     }
 
-    // Paso 2: Intentar acceder a la tabla users
-    console.log('Accediendo a tabla "users"...');
-    const { data, error } = await supabase
-      .from("users")
-      .select("*", { count: 'exact' })
-      .limit(1);
+    // Paso 2: Verificar el acceso a las tablas requeridas
+    const requiredTables = ['users', 'subjects', 'notebooks', 'notebook_entries', 'notebook_media', 'user_profiles', 'profiledate', 'materialuser', 'bookdigital', 'gruppro', 'tareapro'];
+    const tableStatus = [];
+    const missingTables = [];
 
-    if (error) {
-      console.error('❌ Error de Supabase:', error.message);
-      return res.status(500).json({ 
-        error: 'Error en Supabase',
-        message: error.message,
-        code: error.code
+    for (const tableName of requiredTables) {
+      const { data, error } = await supabase
+        .from(tableName)
+        .select('*')
+        .limit(1);
+
+      if (error) {
+        const isMissingTable = error.message.includes('Could not find the table') || error.code === '42P01';
+        tableStatus.push({ table: tableName, status: isMissingTable ? 'missing' : 'error', message: error.message });
+        if (isMissingTable) missingTables.push(tableName);
+      } else {
+        tableStatus.push({ table: tableName, status: 'ok', count: data?.length || 0 });
+      }
+    }
+
+    if (missingTables.length > 0) {
+      return res.status(500).json({
+        status: '⚠️ CONEXIÓN PARCIAL',
+        message: 'La conexión a Supabase funciona, pero faltan tablas en el esquema',
+        missingTables,
+        tableStatus,
+        nextStep: 'Ejecuta los scripts SQL de SUPABASE_CUADERNO_DIGITAL.sql y SUPABASE_NUEVAS_TABLAS.sql en el SQL Editor de Supabase.'
       });
     }
 
     console.log('✅ Conexión exitosa');
-    res.json({ 
+    res.json({
       status: '✅ CONEXIÓN EXITOSA',
       message: 'Conexión a Supabase funcionando correctamente',
       supabaseUrl: url,
-      userCount: data?.length || 0
+      tables: tableStatus
     });
 
   } catch (err) {

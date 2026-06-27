@@ -33,18 +33,23 @@ if (fs.existsSync(envPath)) {
 
 // Paso 2: Obtenemos las variables (del .env o del sistema)
 const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_ANON_KEY;
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const activeSupabaseKey = supabaseServiceRoleKey || supabaseAnonKey;
+const clientMode = supabaseServiceRoleKey ? 'service_role' : 'anon';
 
 // Diagnóstico detallado
 console.log('\n========== DIAGNÓSTICO SUPABASE ==========');
 console.log('✓ SUPABASE_URL:', supabaseUrl ? '✅ Configurada' : '❌ NO ENCONTRADA');
 if (supabaseUrl) console.log('  └─ URL:', supabaseUrl.substring(0, 40) + '...');
-console.log('✓ SUPABASE_ANON_KEY:', supabaseKey ? '✅ Configurada' : '❌ NO ENCONTRADA');
-if (supabaseKey) console.log('  └─ Longitud:', supabaseKey.length, 'caracteres');
+console.log('✓ SUPABASE_ANON_KEY:', supabaseAnonKey ? '✅ Configurada' : '❌ NO ENCONTRADA');
+if (supabaseAnonKey) console.log('  └─ Longitud anon:', supabaseAnonKey.length, 'caracteres');
+console.log('✓ SUPABASE_SERVICE_ROLE_KEY:', supabaseServiceRoleKey ? '✅ Configurada' : '⚪ No usada');
+console.log('✓ MODO DE CLIENTE:', clientMode);
 console.log('=========================================\n');
 
 // Validar antes de crear el cliente
-if (!supabaseUrl || !supabaseKey) {
+if (!supabaseUrl || !activeSupabaseKey) {
   console.error('❌ ERROR CRÍTICO: Variables de Supabase no están definidas');
   console.error('Por favor verifica que hayas configurado:');
   console.error('  - SUPABASE_URL');
@@ -57,8 +62,13 @@ if (!supabaseUrl || !supabaseKey) {
 // Crear cliente de Supabase con manejo de errores
 let supabase;
 try {
-  supabase = createClient(supabaseUrl, supabaseKey);
-  console.log('✅ CONEXIÓN A SUPABASE: EXITOSA');
+  supabase = createClient(supabaseUrl, activeSupabaseKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false
+    }
+  });
+  console.log(`✅ CONEXIÓN A SUPABASE: EXITOSA (modo ${clientMode})`);
 } catch (error) {
   console.error('❌ Error al crear cliente de Supabase:', error.message);
   process.exit(1);
