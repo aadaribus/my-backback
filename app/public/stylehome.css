@@ -9,13 +9,13 @@
   --glass-border: rgba(255, 255, 255, 0.08);
   --glass-accent-border: rgba(138, 92, 246, 0.3);
   --text-main: #080808;
-  --text-muted: #99b7eb;
+  --text-muted: #538cee;
   --primary: #8b5cf6;
   --primary-hover: #a78bfa;
-  --accent-cyan: #06b6d4;
+  --accent-cyan: #2dceeb;
   --danger: #ef4444;
-  --danger-hover: #f87171;
-  --success: #10b981;
+  --danger-hover: #b9f318;
+  --success: #0beea2;
   --radius-lg: 20px;
   --radius-md: 12px;
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
