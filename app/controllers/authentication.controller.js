@@ -138,4 +138,18 @@ async function register(req, res) {
   }
 }
 
-export const methods = { login, register };
+async function obtenerUsuario(req, res) {
+  const user = req.user;
+  if (!user) {
+    return res.status(401).json({ error: 'No autenticado' });
+  }
+
+  res.json({
+    id: user.id,
+    username: user.username,
+    email: user.email,
+    role: user.role
+  });
+}
+
+export const methods = { login, register, obtenerUsuario };

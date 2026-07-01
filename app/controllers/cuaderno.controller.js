@@ -1,27 +1,7 @@
 // app/controllers/cuaderno.controller.js
 import { supabase } from '../config/supabase.js';
 import DOMPurify from 'isomorphic-dompurify';
-import jwt from 'jsonwebtoken';
-
-// ===== FUNCIÓN AUXILIAR: Obtener usuario del token =====
-function getUserFromToken(req) {
-  try {
-    const cookieHeader = req.headers.cookie || '';
-    const cookieJWT = cookieHeader
-      .split(';')
-      .find((cookie) => cookie.trim().startsWith('jwt='));
-
-    if (!cookieJWT) return null;
-
-    const token = cookieJWT.split('=')[1];
-    if (!token) return null;
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    return decoded;
-  } catch (error) {
-    return null;
-  }
-}
+import { getUserFromToken } from '../utils/auth.js';
 
 // ===== FUNCIÓN: Crear cuaderno automáticamente (llamada desde agregar materia) =====
 export async function crearCuadernoAutomatico(subjectId, userId) {

@@ -71,9 +71,9 @@ console.log('==============================================\n');
 import { supabase } from "./config/supabase.js";
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import jsonwebtoken from 'jsonwebtoken';
 import { methods as authentication } from "./controllers/authentication.controller.js";
 import { methods as authorization } from "./middlewares/authorization.js";
+import { requireAuth } from "./utils/auth.js";
 import { methods as cuaderno } from "./controllers/cuaderno.controller.js";
 import { methods as subjects } from "./controllers/subjects.controller.js";
 import { methods as profile } from "./controllers/profile.controller.js";
@@ -194,55 +194,14 @@ app.post("/api/logout", (req, res) => {
   res.clearCookie("jwt", { path: "/" });
   res.json({ status: "ok", message: "Sesión cerrada correctamente" });
 });
+
+app.use('/api', requireAuth);
+
 app.get("/about", authorization.soloLogueado, (req, res) =>
   res.sendFile(__dirname + "/page/about.html")
 );
 
-// Endpoint para obtener información del usuario actual
-app.get("/api/usuario", (req, res) => {
-  try {
-    console.log("[/api/usuario] Solicitud recibida");
-    
-    // Obtener token del header Cookie
-    const cookieHeader = req.headers.cookie || "";
-    const cookieJWT = cookieHeader
-      .split(";")
-      .find((cookie) => cookie.trim().startsWith("jwt="));
-    
-    if (!cookieJWT) {
-      console.warn("[/api/usuario] No se encontró JWT en cookies");
-      return res.status(401).json({ 
-        error: "No autenticado",
-        message: "No hay sesión activa"
-      });
-    }
-
-    const token = cookieJWT.split("=")[1];
-    if (!token) {
-      return res.status(401).json({ 
-        error: "Token inválido"
-      });
-    }
-
-    // Verificar el token
-    const decodificada = jsonwebtoken.verify(token, process.env.JWT_SECRET);
-    
-    console.log("[/api/usuario] ✅ Usuario obtenido:", decodificada.username);
-    
-    res.json({
-      id: decodificada.id,
-      username: decodificada.username,
-      email: decodificada.email,
-      role: decodificada.role
-    });
-  } catch (error) {
-    console.error("[ERROR /api/usuario]", error.message);
-    res.status(401).json({ 
-      error: "Token inválido o expirado",
-      message: error.message
-    });
-  }
-});
+app.get("/api/usuario", authentication.obtenerUsuario);
 
 // 🚀 Endpoint de prueba para conexión con Supabase
 app.get("/ping-supabase", async (req, res) => {
