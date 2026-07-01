@@ -302,14 +302,14 @@ function loadNotebookData() {
 /* ==========================================================================
    📚 FUNCIONALIDAD: AGREGAR MATERIAS
    ========================================================================== */
-const materiaForm = document.querySelector('#materiaModal form');
+const materiaForm = document.getElementById('materiaForm') || document.querySelector('#materiaModal form');
 if (materiaForm) {
   materiaForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const name = materiaForm.querySelector('input[placeholder="Nombre de la materia"]').value;
-    const professor = materiaForm.querySelector('input[placeholder="Profesor"]').value;
-    const schedule = materiaForm.querySelector('input[placeholder="Horario"]').value;
-    const description = materiaForm.querySelector('textarea[placeholder="Descripción"]').value;
+    const name = document.getElementById('materiaName')?.value || materiaForm.querySelector('input[placeholder="Nombre de la materia"]').value;
+    const professor = document.getElementById('materiaProfessor')?.value || materiaForm.querySelector('input[placeholder="Profesor"]').value;
+    const schedule = document.getElementById('materiaSchedule')?.value || materiaForm.querySelector('input[placeholder="Horario"]').value;
+    const description = document.getElementById('materiaDescription')?.value || materiaForm.querySelector('textarea[placeholder="Descripción"]').value;
 
     if (!name.trim()) {
       Swal.fire({ icon: 'error', title: 'Falta información', text: 'Por favor ingresa el nombre de la materia.', background: '#1a1435', color: '#fff', confirmButtonColor: '#8b5cf6' });
@@ -329,7 +329,7 @@ if (materiaForm) {
         materiaForm.reset();
         closeModal('materiaModal');
       } else {
-        Swal.fire({ icon: 'error', title: 'Error', text: data.error, background: '#1a1435', color: '#fff' });
+        Swal.fire({ icon: 'error', title: 'Error', text: data.error || 'No se pudo crear la materia', background: '#1a1435', color: '#fff' });
       }
     } catch (error) {
       console.error('Error al guardar materia:', error);

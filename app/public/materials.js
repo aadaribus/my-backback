@@ -16,6 +16,26 @@ const cancelEditSubjectModalBtn = document.getElementById('cancelEditSubjectModa
 let currentSubject = null;
 let currentNotebook = null;
 
+function getSubjectDisplayName(subject) {
+  return subject.name || subject.admaterial || 'Materia';
+}
+
+function getSubjectDescription(subject) {
+  return subject.description || subject.descriptionmateria || 'Sin descripción';
+}
+
+function getSubjectProfessor(subject) {
+  return subject.professor || subject.nameprof || 'Sin profesor';
+}
+
+function getSubjectSchedule(subject) {
+  return subject.schedule || subject.horauser || '';
+}
+
+function getSubjectId(subject) {
+  return subject.id || subject.subject_id || null;
+}
+
 function openSubjectModal() {
   subjectModal.classList.add('active');
 }
@@ -27,9 +47,14 @@ function closeSubjectModal() {
 
 function openNotebookModal(subject) {
   currentSubject = subject;
-  notebookSubjectTitle.textContent = `Cuaderno de ${subject.name}`;
+  notebookSubjectTitle.textContent = `Cuaderno de ${getSubjectDisplayName(subject)}`;
   notebookModal.classList.add('active');
-  loadNotebookEntries(subject.id);
+  const subjectId = getSubjectId(subject);
+  if (!subjectId) {
+    notebookHistory.innerHTML = '<div class="entry-card"><div class="time">Error</div><div class="content">No se pudo cargar la materia seleccionada.</div></div>';
+    return;
+  }
+  loadNotebookEntries(subjectId);
 }
 
 function closeNotebookModal() {
@@ -40,10 +65,10 @@ function closeNotebookModal() {
 
 function openEditSubjectModal(subject) {
   currentSubject = subject;
-  editSubjectForm.elements.name.value = subject.name || '';
-  editSubjectForm.elements.professor.value = subject.professor || '';
-  editSubjectForm.elements.schedule.value = subject.schedule || '';
-  editSubjectForm.elements.description.value = subject.description || '';
+  editSubjectForm.elements.name.value = getSubjectDisplayName(subject);
+  editSubjectForm.elements.professor.value = getSubjectProfessor(subject);
+  editSubjectForm.elements.schedule.value = getSubjectSchedule(subject);
+  editSubjectForm.elements.description.value = getSubjectDescription(subject);
   editSubjectModal.classList.add('active');
 }
 
@@ -61,7 +86,8 @@ async function loadSubjects() {
       throw new Error(data.error || 'No se pudieron cargar las materias');
     }
 
-    renderSubjects(data.subjects || []);
+    const subjects = data.subjects ?? data.materiales ?? data.materials ?? [];
+    renderSubjects(Array.isArray(subjects) ? subjects : []);
   } catch (error) {
     console.error(error);
     subjectsGrid.innerHTML = '<div class="empty-state">No se pudieron cargar tus materias.</div>';
@@ -79,19 +105,24 @@ function renderSubjects(subjects) {
   const fragment = document.createDocumentFragment();
 
   subjects.forEach((subject) => {
+    const subjectName = getSubjectDisplayName(subject);
+    const subjectDescription = getSubjectDescription(subject);
+    const subjectProfessor = getSubjectProfessor(subject);
+    const subjectSchedule = getSubjectSchedule(subject);
+
     const card = document.createElement('article');
     card.className = 'subject-card';
     card.innerHTML = `
       <div>
-        <h3>${subject.name}</h3>
-        <p>${subject.description || 'Sin descripción'}</p>
+        <h3>${subjectName}</h3>
+        <p>${subjectDescription}</p>
       </div>
       <div class="subject-actions">
         <button type="button" class="edit-btn" data-action="edit">✏️</button>
         <button type="button" class="delete-btn" data-action="delete">🗑️</button>
       </div>
       <div class="subject-meta">
-        <span>${subject.professor || 'Sin profesor'}</span>
+        <span>${subjectProfessor}${subjectSchedule ? ` • ${subjectSchedule}` : ''}</span>
         <strong>Ver cuaderno</strong>
       </div>
     `;
@@ -100,10 +131,10 @@ function renderSubjects(subjects) {
       event.stopPropagation();
       openEditSubjectModal(subject);
     });
-
+ 
     card.querySelector('[data-action="delete"]').addEventListener('click', async (event) => {
       event.stopPropagation();
-      const confirmDelete = confirm(`¿Eliminar la materia "${subject.name}"?`);
+      const confirmDelete = confirm(`¿Eliminar la materia "${getSubjectDisplayName(subject)}"?`);
       if (!confirmDelete) return;
 
       try {
@@ -128,8 +159,22 @@ function renderSubjects(subjects) {
 
 subjectForm.addEventListener('submit', async (event) => {
   event.preventDefault();
-  const formData = new FormData(subjectForm);
-  const payload = Object.fromEntries(formData.entries());
+  const name = subjectForm.elements.name.value.trim();
+  const professor = subjectForm.elements.professor.value.trim();
+  const schedule = subjectForm.elements.schedule.value.trim();
+  const description = subjectForm.elements.description.value.trim();
+
+  if (!name) {
+    alert('El nombre de la materia es obligatorio.');
+    return;
+  }
+
+  const payload = {
+    name,
+    professor: professor || null,
+    schedule: schedule || null,
+    description: description || null
+  };
 
   try {
     const response = await fetch('/api/materias/crear', {
@@ -141,13 +186,15 @@ subjectForm.addEventListener('submit', async (event) => {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error || 'No se pudo crear la materia');
+      const message = data.error || data.message || 'No se pudo crear la materia';
+      throw new Error(message);
     }
 
     closeSubjectModal();
     await loadSubjects();
   } catch (error) {
-    alert(error.message);
+    console.error('Error al crear materia:', error);
+    alert(error.message || 'Ocurrió un error al crear la materia.');
   }
 });
 
@@ -267,7 +314,7 @@ saveNotebookBtn.addEventListener('click', async () => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ notebook_id: currentNotebook, content, subject_name: currentSubject.name })
+      body: JSON.stringify({ notebook_id: currentNotebook, content, subject_name: getSubjectDisplayName(currentSubject) })
     });
 
     const data = await response.json();
@@ -276,10 +323,13 @@ saveNotebookBtn.addEventListener('click', async () => {
     }
 
     notebookEditor.innerHTML = '';
-    await loadNotebookEntries(currentSubject.id);
+    const subjectId = getSubjectId(currentSubject);
+    if (subjectId) {
+      await loadNotebookEntries(subjectId);
+    }
   } catch (error) {
     alert(error.message);
   }
 });
 
-loadSubjects();
+document.addEventListener('DOMContentLoaded', loadSubjects);

@@ -1,7 +1,7 @@
 html {
   --s: 182px; /* control the size*/
   --c1: #f76402;
-  --c2: #fafafafc;
+  --c2: #c0b2b2bd;
   
   --_g: #0000 90deg,var(--c1) 0;
   background: 
@@ -30,12 +30,26 @@ body {
 .form-container{
     width: 100%;
     max-width: 500px;
-    background-color: rgba(253, 251, 251, 0.681);
+    background-color: rgba(5, 132, 250, 0.589);
     border: 2px solid hwb(269 2% 9% / 0.745);
     border-radius: 10px;
     padding: 40px 20px;
     margin: 20px;
     box-sizing: border-box;
+    align-items: center;
+    text-align: center  ;
+}
+
+.form-logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.form-logo img {
+    max-width: 160px;
+    height: auto;
+    display: block;
 }
 
 form{
@@ -47,41 +61,56 @@ gap: 10px;
 form+p, form p{
     text-align: center;
 }
+input{
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 15px 16px;
+    min-height: 45px;
+    font-size: 1rem;
+}
 
 input, button{
     border-radius: 4px;
     border: unset;
-    padding: 15px 30px;
     font-size: large;
 }
 
 button{
+    width: 100%;
+    max-width: 100%;
+    padding: 15px 30px;
     background-color: #5e3a22;
     color: white;
     cursor: pointer;
     font-weight: bold;
-    cursor: pointer;
 }
+
 
 /* Password toggle button styles */
 .password-container {
     position: relative;
+    width: 100%;
 }
 
 .password-wrapper {
     position: relative;
     display: flex;
     align-items: center;
+    width: 100%;
 }
 
 .password-wrapper input {
+    width: 100%;
     flex: 1;
-    padding-right: 50px;
+    padding-right: 48px;
 }
 
 .toggle-password {
     position: absolute;
-    right: 15px;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
     background: none;
     border: none;
     cursor: pointer;

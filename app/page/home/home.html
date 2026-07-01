@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta name="description" content="Página principal de tu mochila digital">
     <meta name="theme-color" content="#222">
+    <link rel="shortcut icon" href="/assets/logo.png" type="image/x-icon">
     <title>My Mochila Digital</title>
     <link rel="stylesheet" href="/stylehome.css">
     <script src="https://jsdelivr.net"></script>
@@ -31,10 +32,9 @@
         <li><a href="#" data-modal="contacto">Contacto</a></li>
       </ul>
       <div class="icons">
-       <button class="logout-btn" id="notebookBtn" aria-label="Cuaderno Digital" type="button">
+        <a class="logout-btn notebook-link" id="notebookBtn" href="/materials" aria-label="Abrir cuaderno digital">
           <img src="/assets/book_digital.png" alt="Cuaderno Digital" class="logout-icon" loading="lazy">
-
-        </button>
+        </a>
         <button class="logout-btn" id="aboutBtn" aria-label="Sobre nosotros" type="button">
           <img src="/assets/acerca-de.png" alt="Sobre nosotros" class="logout-icon" loading="lazy">
         </button>
@@ -67,11 +67,11 @@
         <h2>Agregar Materia</h2>
         <button class="modal-close" data-close="materiaModal">&times;</button>
       </div>
-      <form class="modal-form">
-        <input type="text" placeholder="Nombre de la materia" required>
-        <input type="text" placeholder="Profesor" required>
-        <input type="text" placeholder="Horario" required>
-        <textarea placeholder="Descripción"></textarea>
+      <form class="modal-form" id="materiaForm">
+        <input id="materiaName" name="name" type="text" placeholder="Nombre de la materia" required>
+        <input id="materiaProfessor" name="professor" type="text" placeholder="Profesor" required>
+        <input id="materiaSchedule" name="schedule" type="text" placeholder="Horario" required>
+        <textarea id="materiaDescription" name="description" placeholder="Descripción"></textarea>
         <div class="modal-buttons">
           <button type="submit" class="btn-submit">Guardar</button>
           <button type="button" class="btn-cancel" data-close="materiaModal">Cancelar</button>
@@ -222,168 +222,65 @@
     </div>
   </div>
 
-  <!-- Modal Overlay -->
-  <div class="modal-overlay" id="modalOverlay"></div>
-
-  <!-- Modal: Agregar Materia -->
-  <div class="modal" id="materiaModal">
-    <div class="modal-content">
+  <!-- Modal: Cuaderno Digital (Amplio) -->
+  <div class="modal modal-expanded" id="notebookModal">
+    <div class="modal-content modal-content-expanded">
       <div class="modal-header">
-        <h2>Agregar Materia</h2>
-        <button class="modal-close" data-close="materiaModal">&times;</button>
-      </div>
-      <form class="modal-form">
-        <input type="text" placeholder="Nombre de la materia" required>
-        <input type="text" placeholder="Profesor" required>
-        <input type="text" placeholder="Horario" required>
-        <textarea placeholder="Descripción"></textarea>
-        <div class="modal-buttons">
-          <button type="submit" class="btn-submit">Guardar</button>
-          <button type="button" class="btn-cancel" data-close="materiaModal">Cancelar</button>
+        <div class="notebook-header-left">
+          <h2>Cuaderno Digital</h2>
+          <p class="notebook-subject" id="notebookSubject">Matemáticas</p>
         </div>
-      </form>
-    </div>
-  </div>
+        <button class="modal-close" data-close="notebookModal">&times;</button>
+      </div>
 
-  <!-- Modal: Historial -->
-  <div class="modal" id="historialModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Historial</h2>
-        <button class="modal-close" data-close="historialModal">&times;</button>
+      <!-- Editor Toolbar -->
+      <div class="notebook-toolbar">
+        <button type="button" class="toolbar-btn" id="boldBtn" title="Negrita (Ctrl+B)">
+          <strong>B</strong>
+        </button>
+        <button type="button" class="toolbar-btn" id="italicBtn" title="Cursiva (Ctrl+I)">
+          <em>I</em>
+        </button>
+        <button type="button" class="toolbar-btn" id="underlineBtn" title="Subrayado (Ctrl+U)">
+          <u>U</u>
+        </button>
+        <div class="toolbar-divider"></div>
+        <button type="button" class="toolbar-btn" id="fileBtn" title="Agregar archivo">
+          📎 Archivo
+        </button>
+        <button type="button" class="toolbar-btn" id="imageBtn" title="Agregar imagen">
+          🖼️ Imagen
+        </button>
+        <button type="button" class="toolbar-btn" id="audioBtn" title="Agregar audio">
+          🎤 Audio
+        </button>
+        <button type="button" class="toolbar-btn" id="videoBtn" title="Agregar video">
+          🎬 Video
+        </button>
+        <div class="toolbar-divider"></div>
+        <button type="button" class="toolbar-btn" id="clearBtn" title="Limpiar formato">
+          ⚡ Limpiar
+        </button>
       </div>
-      <div class="modal-body">
-        <p>Aquí aparecerá tu historial de actividades</p>
-        <ul class="history-list" style="margin: 20px 0; list-style: none; padding: 0;">
-          <li style="padding: 10px; border-bottom: 1px solid #ddd;">Materia agregada: Matemáticas</li>
-          <li style="padding: 10px; border-bottom: 1px solid #ddd;">Tarea creada: Ejercicio 1</li>
-          <li style="padding: 10px;">Grupo creado: Grupo de estudio</li>
-        </ul>
-        <div class="modal-buttons">
-          <button type="button" class="btn-cancel" data-close="historialModal">Cerrar</button>
-        </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Modal: Grupos -->
-  <div class="modal" id="gruposModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Grupos</h2>
-        <button class="modal-close" data-close="gruposModal">&times;</button>
+      <!-- Área de Drop -->
+      <div class="drop-zone" id="dropZone">
+        <p class="drop-hint">Arrastra archivos aquí o usa los botones arriba</p>
       </div>
-      <form class="modal-form">
-        <input type="text" placeholder="Nombre del grupo" required>
-        <textarea placeholder="Descripción del grupo"></textarea>
-        <input type="email" placeholder="Email del miembro a invitar" required>
-        <div class="modal-buttons">
-          <button type="submit" class="btn-submit">Crear Grupo</button>
-          <button type="button" class="btn-cancel" data-close="gruposModal">Cancelar</button>
-        </div>
-      </form>
-    </div>
-  </div>
 
-  <!-- Modal: Tareas -->
-  <div class="modal" id="tareasModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Tareas</h2>
-        <button class="modal-close" data-close="tareasModal">&times;</button>
-      </div>
-      <form class="modal-form">
-        <input type="text" placeholder="Título de la tarea" required>
-        <select required>
-          <option value="">Selecciona una materia</option>
-          <option value="matematicas">Matemáticas</option>
-          <option value="fisica">Física</option>
-          <option value="quimica">Química</option>
-        </select>
-        <textarea placeholder="Descripción de la tarea" required></textarea>
-        <input type="date" required>
-        <div class="modal-buttons">
-          <button type="submit" class="btn-submit">Crear Tarea</button>
-          <button type="button" class="btn-cancel" data-close="tareasModal">Cancelar</button>
-        </div>
-      </form>
-    </div>
-  </div>
+      <!-- Editor de Texto Enriquecido -->
+      <div class="notebook-editor" id="notebookEditor" contenteditable="true" role="textbox" aria-label="Editor de cuaderno digital"></div>
 
-  <!-- Modal: Perfil -->
-  <div class="modal" id="perfilModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Perfil</h2>
-        <button class="modal-close" data-close="perfilModal">&times;</button>
+      <!-- Área de Contenido (entradas del cuaderno) -->
+      <div class="notebook-entries" id="notebookEntries">
+        <!-- Las entradas se agregarán dinámicamente aquí -->
       </div>
-      <form class="modal-form">
-        <input type="text" placeholder="Nombre completo" required>
-        <input type="email" placeholder="Correo electrónico" required>
-        <input type="tel" placeholder="Teléfono">
-        <input type="text" placeholder="Universidad/Instituto">
-        <input type="text" placeholder="Carrera">
-        <div class="modal-buttons">
-          <button type="submit" class="btn-submit">Actualizar Perfil</button>
-          <button type="button" class="btn-cancel" data-close="perfilModal">Cancelar</button>
-        </div>
-      </form>
-    </div>
-  </div>
 
-  <!-- Modal: Configuración -->
-  <div class="modal" id="configuracionModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Configuración</h2>
-        <button class="modal-close" data-close="configuracionModal">&times;</button>
+      <!-- Modal Buttons -->
+      <div class="modal-buttons">
+        <button type="button" class="btn-submit" id="saveNotebook">Guardar</button>
+        <button type="button" class="btn-cancel" data-close="notebookModal">Cerrar</button>
       </div>
-      <div class="modal-body">
-        <div class="settings-item">
-          <label>
-            <input type="checkbox" checked> Notificaciones habilitadas
-          </label>
-        </div>
-        <div class="settings-item">
-          <label for="darkModeToggle">
-            <input type="checkbox" id="darkModeToggle" checked> Modo oscuro
-          </label>
-        </div>
-        <div class="settings-item">
-          <label>
-            <input type="checkbox"> Permitir compartir datos
-          </label>
-        </div>
-        <div class="modal-buttons" style="margin-top: 20px;">
-          <button type="button" class="btn-submit">Guardar Cambios</button>
-          <button type="button" class="btn-cancel" data-close="configuracionModal">Cancelar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal: Contacto -->
-  <div class="modal" id="contactoModal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Contacto</h2>
-        <button class="modal-close" data-close="contactoModal">&times;</button>
-      </div>
-      <form class="modal-form">
-        <input type="text" placeholder="Tu nombre" required>
-        <input type="email" placeholder="Tu email" required>
-        <select required>
-          <option value="">Selecciona un asunto</option>
-          <option value="soporte">Soporte técnico</option>
-          <option value="sugerencia">Sugerencia</option>
-          <option value="reporte">Reporte de error</option>
-        </select>
-        <textarea placeholder="Tu mensaje" required></textarea>
-        <div class="modal-buttons">
-          <button type="submit" class="btn-submit">Enviar</button>
-          <button type="button" class="btn-cancel" data-close="contactoModal">Cancelar</button>
-        </div>
-      </form>
     </div>
   </div>
 
