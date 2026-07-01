@@ -10,6 +10,67 @@ const validateEmail = (email) => {
   return emailRegex.test(email);
 };
 
+function hasServiceRoleKey() {
+  return Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY);
+}
+
+async function getAuthUserByEmail(email) {
+  if (!hasServiceRoleKey() || !email) return null;
+
+  try {
+    const { data, error } = await supabase.auth.admin.getUserByEmail(email);
+    if (error) {
+      console.warn('[Auth] No se pudo buscar auth user por email:', error.message || error);
+      return null;
+    }
+    return data?.user ?? null;
+  } catch (error) {
+    console.error('[Auth] Error admin.getUserByEmail:', error.message || error);
+    return null;
+  }
+}
+
+async function createAuthUser(email, password) {
+  if (!hasServiceRoleKey() || !email || !password) return null;
+
+  try {
+    const { data, error } = await supabase.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: { created_by: 'mi-mochila-backend' }
+    });
+
+    if (error) {
+      console.warn('[Auth] No se pudo crear auth user:', error.message || error);
+      return null;
+    }
+    return data?.user ?? null;
+  } catch (error) {
+    console.error('[Auth] Error admin.createUser:', error.message || error);
+    return null;
+  }
+}
+
+async function resolveAuthUserId(email, password) {
+  if (!hasServiceRoleKey() || !email) return null;
+
+  const authUser = await getAuthUserByEmail(email);
+  if (authUser) return authUser.id;
+
+  return (await createAuthUser(email, password))?.id ?? null;
+}
+
+function buildJwtPayload(user, authUserId) {
+  return {
+    id: authUserId || user.id,
+    local_id: user.id,
+    username: user.username,
+    email: user.email,
+    role: user.role
+  };
+}
+
 async function login(req, res) {
   console.log("[LOGIN] Solicitud recibida:", new Date().toISOString());
   const { username, password } = req.body;
@@ -44,9 +105,10 @@ async function login(req, res) {
       return res.status(400).send({ error: { message: "Usuario o contraseña incorrectos" } });
     }
 
+    const authUserId = await resolveAuthUserId(user.email, password);
     console.log("[LOGIN] Generando JWT...");
     const token = jsonwebtoken.sign(
-      { id: user.id, username: user.username, email: user.email, role: user.role },
+      buildJwtPayload(user, authUserId),
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN || "7d" }
     );
@@ -62,7 +124,18 @@ async function login(req, res) {
       path: "/"
     });
 
-    res.send({ status: "ok", message: "Login correcto", redirect: "/home" });
+    res.send({
+      status: "ok",
+      message: "Login correcto",
+      redirect: "/home",
+      user: {
+        id: authUserId || user.id,
+        local_id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role
+      }
+    });
   } catch (error) {
     console.error("[❌ ERROR SERVIDOR EN LOGIN]", error.message);
     console.error("[STACK]", error.stack);
@@ -120,11 +193,13 @@ async function register(req, res) {
     console.log("  - Rol:", nuevoUsuario.role);
     console.log("  - Creado en:", nuevoUsuario.created_at);
     
+    const authUserId = await resolveAuthUserId(nuevoUsuario.email, password);
     return res.status(201).send({
       status: "ok",
       message: `Usuario ${nuevoUsuario.username} registrado correctamente`,
       user: {
-        id: nuevoUsuario.id,
+        id: authUserId || nuevoUsuario.id,
+        local_id: nuevoUsuario.id,
         username: nuevoUsuario.username,
         email: nuevoUsuario.email,
         role: nuevoUsuario.role,
@@ -146,6 +221,7 @@ async function obtenerUsuario(req, res) {
 
   res.json({
     id: user.id,
+    local_id: user.local_id || null,
     username: user.username,
     email: user.email,
     role: user.role

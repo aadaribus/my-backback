@@ -43,6 +43,7 @@ if (process.env.NODE_ENV !== 'production') {
 // Validar variables críticas
 console.log('\n========== VALIDACIÓN DE VARIABLES ==========');
 const requiredVars = ['JWT_SECRET', 'SUPABASE_URL', 'SUPABASE_ANON_KEY'];
+const optionalVars = ['SUPABASE_SERVICE_ROLE_KEY'];
 const missingVars = [];
 
 requiredVars.forEach(varName => {
@@ -52,6 +53,15 @@ requiredVars.forEach(varName => {
   } else {
     console.error(`❌ ${varName}: NO CONFIGURADA`);
     missingVars.push(varName);
+  }
+});
+
+optionalVars.forEach(varName => {
+  const value = process.env[varName];
+  if (value) {
+    console.log(`✅ ${varName}: Configurada (recomendado para user_id UUID)`);
+  } else {
+    console.log(`⚪ ${varName}: No configurada (recomendada para convertir usuarios locales a auth UUID)`);
   }
 });
 

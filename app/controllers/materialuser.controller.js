@@ -12,6 +12,7 @@ export async function crearMateria(req, res) {
       return res.status(401).json({ error: 'No autenticado' });
     }
 
+    const localId = user.local_id || user.id;
     const { admaterial, nameprof, horauser, descriptionmateria } = req.body;
 
     // Validar campos requeridos
@@ -44,7 +45,10 @@ export async function crearMateria(req, res) {
     res.status(201).json({
       success: true,
       subject_id: data[0].id,
-      material: data[0],
+      material: {
+        ...data[0],
+        local_id: localId
+      },
       message: `Materia "${admaterial}" creada exitosamente`
     });
 
@@ -81,7 +85,8 @@ export async function obtenerMaterias(req, res) {
 
     res.json({
       success: true,
-      materiales: data || []
+      materiales: data || [],
+      local_id: localId
     });
 
   } catch (error) {
@@ -114,7 +119,10 @@ export async function obtenerMateria(req, res) {
 
     res.json({
       success: true,
-      material: data
+      material: {
+        ...data,
+        local_id: localId
+      }
     });
 
   } catch (error) {
@@ -167,7 +175,10 @@ export async function actualizarMateria(req, res) {
 
     res.json({
       success: true,
-      material: data,
+      material: {
+        ...data,
+        local_id: localId
+      },
       message: 'Materia actualizada exitosamente'
     });
 
@@ -212,6 +223,7 @@ export async function eliminarMateria(req, res) {
 
     res.json({
       success: true,
+      local_id: localId,
       message: 'Materia eliminada exitosamente'
     });
 

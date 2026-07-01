@@ -13,6 +13,7 @@ export async function guardarEntrada(req, res) {
       return res.status(401).json({ error: 'No autenticado' });
     }
 
+    const localId = user.local_id || user.id;
     const { materialuser_id, texmaterial, imagmaterial, vozmaterial, moviematerial } = req.body;
 
     if (!materialuser_id) {
@@ -66,6 +67,10 @@ export async function guardarEntrada(req, res) {
     res.status(201).json({
       success: true,
       entry_id: entryId,
+      entry: {
+        ...entry[0],
+        local_id: localId
+      },
       timestamp,
       message: 'Entrada guardada exitosamente'
     });
@@ -84,6 +89,7 @@ export async function obtenerEntradas(req, res) {
       return res.status(401).json({ error: 'No autenticado' });
     }
 
+    const localId = user.local_id || user.id;
     const { data: entries, error } = await supabase
       .from('bookdigital_with_materials')
       .select('*')
@@ -99,7 +105,8 @@ export async function obtenerEntradas(req, res) {
 
     res.json({
       success: true,
-      entries: entries || []
+      entries: (entries || []).map((entry) => ({ ...entry, local_id: localId })),
+      local_id: localId
     });
   } catch (error) {
     console.error('[GET /api/bookdigital]', error);
@@ -117,6 +124,7 @@ export async function obtenerEntradasMateria(req, res) {
     }
 
     const { materialuser_id } = req.params;
+    const localId = user.local_id || user.id;
 
     // Verificar que la materia pertenece al usuario
     const { data: material, error: matError } = await supabase
@@ -143,7 +151,8 @@ export async function obtenerEntradasMateria(req, res) {
 
     res.json({
       success: true,
-      entries: entries || []
+      entries: (entries || []).map((entry) => ({ ...entry, local_id: localId })),
+      local_id: localId
     });
   } catch (error) {
     console.error('[GET /api/bookdigital/:materialuser_id]', error);
@@ -162,6 +171,7 @@ export async function actualizarEntrada(req, res) {
 
     const { id } = req.params;
     const { texmaterial, imagmaterial, vozmaterial, moviematerial } = req.body;
+    const localId = user.local_id || user.id;
 
     // Verificar que la entrada pertenece al usuario
     const { data: entry, error: entryError } = await supabase
@@ -196,7 +206,10 @@ export async function actualizarEntrada(req, res) {
 
     res.json({
       success: true,
-      entry: updated[0],
+      entry: {
+        ...updated[0],
+        local_id: localId
+      },
       message: 'Entrada actualizada'
     });
   } catch (error) {
@@ -215,6 +228,7 @@ export async function eliminarEntrada(req, res) {
     }
 
     const { id } = req.params;
+    const localId = user.local_id || user.id;
 
     // Verificar que la entrada pertenece al usuario
     const { data: entry, error: entryError } = await supabase
@@ -240,6 +254,7 @@ export async function eliminarEntrada(req, res) {
 
     res.json({
       success: true,
+      local_id: localId,
       message: 'Entrada eliminada'
     });
   } catch (error) {
@@ -257,6 +272,7 @@ export async function obtenerHistorial(req, res) {
       return res.status(401).json({ error: 'No autenticado' });
     }
 
+    const localId = user.local_id || user.id;
     const { data: history, error } = await supabase
       .from('bookhistory_with_materials')
       .select('*')
@@ -271,7 +287,8 @@ export async function obtenerHistorial(req, res) {
 
     res.json({
       success: true,
-      history: history || []
+      history: (history || []).map((entry) => ({ ...entry, local_id: localId })),
+      local_id: localId
     });
   } catch (error) {
     console.error('[GET /api/bookhistory]', error);

@@ -12,6 +12,7 @@ export async function crearMateria(req, res) {
       return res.status(401).json({ error: 'No autenticado' });
     }
 
+    const localId = user.local_id || user.id;
     const { name, professor, schedule, description } = req.body;
 
     // Validar campos requeridos
@@ -44,7 +45,10 @@ export async function crearMateria(req, res) {
     res.status(201).json({
       success: true,
       subject_id: data[0].id,
-      subject: data[0],
+      subject: {
+        ...data[0],
+        local_id: localId
+      },
       message: `Materia "${name}" creada exitosamente`
     });
 
@@ -63,6 +67,7 @@ export async function obtenerMaterias(req, res) {
       return res.status(401).json({ error: 'No autenticado' });
     }
 
+    const localId = user.local_id || user.id;
     console.log(`[Materias] Obteniendo materias para usuario ${user.id}`);
 
     // Obtener todas las materias del usuario
@@ -81,8 +86,9 @@ export async function obtenerMaterias(req, res) {
 
     res.json({
       success: true,
-      subjects: data,
-      count: data.length
+      subjects: data.map((subject) => ({ ...subject, local_id: localId })),
+      count: data.length,
+      local_id: localId
     });
 
   } catch (error) {
@@ -101,6 +107,7 @@ export async function obtenerMateria(req, res) {
     }
 
     const { subject_id } = req.params;
+    const localId = user.local_id || user.id;
 
     const { data, error } = await supabase
       .from('subjects')
@@ -115,7 +122,10 @@ export async function obtenerMateria(req, res) {
 
     res.json({
       success: true,
-      subject: data
+      subject: {
+        ...data,
+        local_id: localId
+      }
     });
 
   } catch (error) {
@@ -135,6 +145,7 @@ export async function actualizarMateria(req, res) {
 
     const { subject_id } = req.params;
     const { name, professor, schedule, description } = req.body;
+    const localId = user.local_id || user.id;
 
     // Verificar que el usuario es dueño de la materia
     const { data: subject, error: checkError } = await supabase
@@ -171,7 +182,10 @@ export async function actualizarMateria(req, res) {
 
     res.json({
       success: true,
-      subject: data[0],
+      subject: {
+        ...data[0],
+        local_id: localId
+      },
       message: 'Materia actualizada exitosamente'
     });
 
@@ -191,6 +205,7 @@ export async function eliminarMateria(req, res) {
     }
 
     const { subject_id } = req.params;
+    const localId = user.local_id || user.id;
 
     // Verificar que el usuario es dueño
     const { data: subject, error: checkError } = await supabase
@@ -219,6 +234,7 @@ export async function eliminarMateria(req, res) {
 
     res.json({
       success: true,
+      local_id: localId,
       message: 'Materia eliminada exitosamente'
     });
 

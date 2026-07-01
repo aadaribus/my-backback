@@ -12,6 +12,7 @@ export async function crearGrupo(req, res) {
       return res.status(401).json({ error: 'No autenticado' });
     }
 
+    const localId = user.local_id || user.id;
     const { grupname, grupdecription, grupmail } = req.body;
 
     if (!grupname) {
@@ -41,7 +42,10 @@ export async function crearGrupo(req, res) {
     res.status(201).json({
       success: true,
       group_id: data[0].id,
-      group: data[0],
+      group: {
+        ...data[0],
+        local_id: localId
+      },
       message: `Grupo "${grupname}" creado exitosamente`
     });
 
@@ -74,7 +78,8 @@ export async function obtenerGrupos(req, res) {
 
     res.json({
       success: true,
-      grupos: data || []
+      grupos: data || [],
+      local_id: localId
     });
 
   } catch (error) {
@@ -107,7 +112,10 @@ export async function obtenerGrupo(req, res) {
 
     res.json({
       success: true,
-      group: data
+      group: {
+        ...data,
+        local_id: localId
+      }
     });
 
   } catch (error) {
@@ -158,7 +166,10 @@ export async function actualizarGrupo(req, res) {
 
     res.json({
       success: true,
-      group: data,
+      group: {
+        ...data,
+        local_id: localId
+      },
       message: 'Grupo actualizado exitosamente'
     });
 
@@ -202,6 +213,7 @@ export async function eliminarGrupo(req, res) {
 
     res.json({
       success: true,
+      local_id: localId,
       message: 'Grupo eliminado exitosamente'
     });
 

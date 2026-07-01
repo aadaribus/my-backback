@@ -12,6 +12,7 @@ export async function crearTarea(req, res) {
       return res.status(401).json({ error: 'No autenticado' });
     }
 
+    const localId = user.local_id || user.id;
     const { tareaname, tareadescription, datetarea, imagentarea, materialuser_id } = req.body;
 
     if (!tareaname) {
@@ -44,7 +45,10 @@ export async function crearTarea(req, res) {
     res.status(201).json({
       success: true,
       task_id: data[0].id,
-      task: data[0],
+      task: {
+        ...data[0],
+        local_id: localId
+      },
       message: `Tarea "${tareaname}" creada exitosamente`
     });
 
@@ -77,7 +81,8 @@ export async function obtenerTareas(req, res) {
 
     res.json({
       success: true,
-      tareas: data || []
+      tareas: data || [],
+      local_id: localId
     });
 
   } catch (error) {
@@ -110,7 +115,10 @@ export async function obtenerTarea(req, res) {
 
     res.json({
       success: true,
-      task: data
+      task: {
+        ...data,
+        local_id: localId
+      }
     });
 
   } catch (error) {
@@ -163,7 +171,10 @@ export async function actualizarTarea(req, res) {
 
     res.json({
       success: true,
-      task: data,
+      task: {
+        ...data,
+        local_id: localId
+      },
       message: 'Tarea actualizada exitosamente'
     });
 
@@ -207,6 +218,7 @@ export async function eliminarTarea(req, res) {
 
     res.json({
       success: true,
+      local_id: localId,
       message: 'Tarea eliminada exitosamente'
     });
 

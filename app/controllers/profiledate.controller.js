@@ -12,6 +12,7 @@ export async function obtenerPerfil(req, res) {
       return res.status(401).json({ error: 'No autenticado' });
     }
 
+    const localId = user.local_id || user.id;
     console.log(`[Perfil] Obteniendo perfil del usuario ${user.id}`);
 
     // Obtener perfil
@@ -48,7 +49,10 @@ export async function obtenerPerfil(req, res) {
 
       return res.json({
         success: true,
-        profile: newProfile
+        profile: {
+          ...newProfile,
+          local_id: localId
+        }
       });
     }
 
@@ -56,7 +60,10 @@ export async function obtenerPerfil(req, res) {
 
     res.json({
       success: true,
-      profile: data
+      profile: {
+        ...data,
+        local_id: localId
+      }
     });
 
   } catch (error) {
@@ -87,6 +94,7 @@ export async function actualizarPerfil(req, res) {
 
     let profileData;
     let updateError;
+    const localId = user.local_id || user.id;
 
     if (existingProfile) {
       // Actualizar perfil existente
@@ -132,7 +140,10 @@ export async function actualizarPerfil(req, res) {
 
     res.json({
       success: true,
-      profile: profileData,
+      profile: {
+        ...profileData,
+        local_id: localId
+      },
       message: 'Perfil actualizado exitosamente'
     });
 
