@@ -1,6 +1,7 @@
 import bcryptjs from "bcryptjs";
 import jsonwebtoken from "jsonwebtoken";
 import { supabase } from "../config/supabase.js";
+import { buildStableUserId, ensureAuthUserUuid } from "../utils/auth.js";
 
 console.log("✅ authentication.controller.js cargado correctamente");
 
@@ -15,50 +16,39 @@ function hasServiceRoleKey() {
 }
 
 async function getAuthUserByEmail(email) {
-  if (!hasServiceRoleKey() || !email) return null;
+  if (!email) return null;
 
   try {
-    const { data, error } = await supabase.auth.admin.getUserByEmail(email);
+    const { data, error } = await supabase
+      .from('users')
+      .select('id, email, username')
+      .eq('email', email)
+      .maybeSingle();
+
     if (error) {
-      console.warn('[Auth] No se pudo buscar auth user por email:', error.message || error);
+      console.warn('[Auth] No se pudo buscar usuario por email:', error.message || error);
       return null;
     }
-    return data?.user ?? null;
+
+    return data ?? null;
   } catch (error) {
-    console.error('[Auth] Error admin.getUserByEmail:', error.message || error);
+    console.error('[Auth] Error al buscar usuario por email:', error.message || error);
     return null;
   }
 }
 
-async function createAuthUser(email, password) {
-  if (!hasServiceRoleKey() || !email || !password) return null;
+async function resolveAuthUserId(user) {
+  if (!user?.email) return null;
 
-  try {
-    const { data, error } = await supabase.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-      user_metadata: { created_by: 'mi-mochila-backend' }
-    });
+  const authUserId = await ensureAuthUserUuid({
+    id: user.id,
+    local_id: user.id,
+    email: user.email,
+    username: user.username,
+    role: user.role
+  });
 
-    if (error) {
-      console.warn('[Auth] No se pudo crear auth user:', error.message || error);
-      return null;
-    }
-    return data?.user ?? null;
-  } catch (error) {
-    console.error('[Auth] Error admin.createUser:', error.message || error);
-    return null;
-  }
-}
-
-async function resolveAuthUserId(email, password) {
-  if (!hasServiceRoleKey() || !email) return null;
-
-  const authUser = await getAuthUserByEmail(email);
-  if (authUser) return authUser.id;
-
-  return (await createAuthUser(email, password))?.id ?? null;
+  return authUserId || buildStableUserId(user.id);
 }
 
 function buildJwtPayload(user, authUserId) {
@@ -105,7 +95,7 @@ async function login(req, res) {
       return res.status(400).send({ error: { message: "Usuario o contraseña incorrectos" } });
     }
 
-    const authUserId = await resolveAuthUserId(user.email, password);
+    const authUserId = await resolveAuthUserId(user);
     console.log("[LOGIN] Generando JWT...");
     const token = jsonwebtoken.sign(
       buildJwtPayload(user, authUserId),
@@ -193,7 +183,7 @@ async function register(req, res) {
     console.log("  - Rol:", nuevoUsuario.role);
     console.log("  - Creado en:", nuevoUsuario.created_at);
     
-    const authUserId = await resolveAuthUserId(nuevoUsuario.email, password);
+    const authUserId = await resolveAuthUserId(nuevoUsuario);
     return res.status(201).send({
       status: "ok",
       message: `Usuario ${nuevoUsuario.username} registrado correctamente`,

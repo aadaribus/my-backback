@@ -83,7 +83,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import { methods as authentication } from "./controllers/authentication.controller.js";
 import { methods as authorization } from "./middlewares/authorization.js";
-import { requireAuth } from "./utils/auth.js";
+import { requireAuth, getUserFromToken } from "./utils/auth.js";
 import { methods as cuaderno } from "./controllers/cuaderno.controller.js";
 import { methods as subjects } from "./controllers/subjects.controller.js";
 import { methods as profile } from "./controllers/profile.controller.js";
@@ -173,6 +173,15 @@ app.use(express.static(__dirname + "/public"));
 app.use(express.json());
 app.use(cookieParser());
 
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 // rutas principales
 app.get("/", authorization.soloUsuario, (req, res) =>
   res.sendFile(__dirname + "/page/login.html")
@@ -190,9 +199,25 @@ app.get("/register", authorization.soloUsuario, (req, res) =>
 // );
 
 // Opción 2: cualquier usuario logueado
-app.get("/home", authorization.soloLogueado, (req, res) =>
-  res.sendFile(__dirname + "/page/home/home.html")
-);
+app.get("/home", authorization.soloLogueado, (req, res) => {
+  const user = getUserFromToken(req);
+  const displayName = user?.username || user?.email || user?.local_id || 'Usuario';
+  const homePath = path.join(__dirname, '/page/home/home.html');
+
+  fs.readFile(homePath, 'utf8', (err, html) => {
+    if (err) {
+      console.error('Error al cargar home.html:', err);
+      return res.status(500).send('Error al cargar la página');
+    }
+
+    const updatedHtml = html.replace(
+      '<span class="user-name" id="user-name">Usuario</span>',
+      `<span class="user-name" id="user-name">${escapeHtml(displayName)}</span>`
+    );
+
+    res.send(updatedHtml);
+  });
+});
 
 app.get("/materials", authorization.soloLogueado, (req, res) =>
   res.sendFile(__dirname + "/page/home/materials.html")

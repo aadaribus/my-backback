@@ -2,6 +2,7 @@
 // Controlador para manejar materias/asignaturas
 
 import { supabase } from '../config/supabase.js';
+import { buildStableUserId } from '../utils/auth.js';
 
 // ===== ENDPOINT: POST /api/materias/crear =====
 // Crear una nueva materia
@@ -13,6 +14,7 @@ export async function crearMateria(req, res) {
     }
 
     const localId = user.local_id || user.id;
+    const resolvedUserId = buildStableUserId(localId);
     const { name, professor, schedule, description } = req.body;
 
     // Validar campos requeridos
@@ -26,7 +28,7 @@ export async function crearMateria(req, res) {
     const { data, error } = await supabase
       .from('subjects')
       .insert({
-        user_id: user.id,
+        user_id: resolvedUserId,
         name: name.trim(),
         professor: professor || null,
         schedule: schedule || null,

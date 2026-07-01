@@ -96,7 +96,8 @@ export async function obtenerTareas(req, res) {
   } catch (error) {
     console.error('[GET /api/tareapro]', error);
     res.status(500).json({ error: 'Error al obtener tareas' });
-  }"}]}
+  }
+}
 
 // ===== ENDPOINT: GET /api/tareapro/:id =====
 // Obtener una tarea específica
@@ -107,6 +108,7 @@ export async function obtenerTarea(req, res) {
       return res.status(401).json({ error: 'No autenticado' });
     }
 
+    const localId = user.local_id || user.id;
     const { id } = req.params;
 
     const { data, error } = await supabase
@@ -143,6 +145,7 @@ export async function actualizarTarea(req, res) {
       return res.status(401).json({ error: 'No autenticado' });
     }
 
+    const localId = user.local_id || user.id;
     const { id } = req.params;
     const { tareaname, tareadescription, datetarea, imagentarea, completed } = req.body;
 

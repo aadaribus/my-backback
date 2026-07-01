@@ -11,8 +11,9 @@ async function cargarNombreUsuario() {
     if (response.ok) {
       const data = await response.json();
       const userNameElement = document.getElementById('user-name');
-      if (userNameElement && data.username) {
-        userNameElement.textContent = data.username;
+      if (userNameElement) {
+        const displayName = data.username || data.email || data.local_id || 'Usuario';
+        userNameElement.textContent = displayName;
       }
     } else {
       console.error('Error al obtener nombre del usuario');
