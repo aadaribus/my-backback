@@ -22,10 +22,11 @@ async function cargarNombreUsuario() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   cargarNombreUsuario();
   initializeModals();
   initializeThemeToggle();
+  await loadUserSubjectsForTasks();
 });
 
 function initializeThemeToggle() {
@@ -303,36 +304,279 @@ function loadNotebookData() {
    📚 FUNCIONALIDAD: AGREGAR MATERIAS
    ========================================================================== */
 const materiaForm = document.getElementById('materiaForm') || document.querySelector('#materiaModal form');
-if (materiaForm) {
-  materiaForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const name = document.getElementById('materiaName')?.value || materiaForm.querySelector('input[placeholder="Nombre de la materia"]').value;
-    const professor = document.getElementById('materiaProfessor')?.value || materiaForm.querySelector('input[placeholder="Profesor"]').value;
-    const schedule = document.getElementById('materiaSchedule')?.value || materiaForm.querySelector('input[placeholder="Horario"]').value;
-    const description = document.getElementById('materiaDescription')?.value || materiaForm.querySelector('textarea[placeholder="Descripción"]').value;
+const taskSubjectSelect = document.getElementById('taskSubjectSelect');
+const taskSubjectEmpty = document.getElementById('taskSubjectEmpty');
+const historySubjectSelect = document.getElementById('historySubjectSelect');
+const historySubjectEmpty = document.getElementById('historySubjectEmpty');
+const taskList = document.getElementById('taskList');
+const historyContent = document.getElementById('historyContent');
+const tareaForm = document.getElementById('tareaForm');
 
-    if (!name.trim()) {
-      Swal.fire({ icon: 'error', title: 'Falta información', text: 'Por favor ingresa el nombre de la materia.', background: '#1a1435', color: '#fff', confirmButtonColor: '#8b5cf6' });
+function setEmptyTaskState(message = 'Selecciona una materia para ver sus tareas.') {
+  if (!taskList) return;
+  taskList.innerHTML = `<div class="empty-state">${message}</div>`;
+}
+
+function setEmptyHistoryState(message = 'Selecciona una materia para ver su historial.') {
+  if (!historyContent) return;
+  historyContent.innerHTML = `<div class="empty-state">${message}</div>`;
+}
+
+function renderTaskList(tasks) {
+  if (!taskList) return;
+  taskList.innerHTML = '';
+
+  const fragment = document.createDocumentFragment();
+  tasks.forEach((task) => {
+    const dueDate = task.datetarea ? new Date(task.datetarea).toLocaleDateString('es-ES') : 'Sin fecha';
+    const completed = task.completed ? '✅ Completada' : '⏳ Pendiente';
+    const card = document.createElement('div');
+    card.className = 'task-card';
+    card.innerHTML = `
+      <div class="task-card-header">
+        <strong>${task.tareaname || 'Tarea sin título'}</strong>
+        <span>${completed}</span>
+      </div>
+      <div class="task-card-body">
+        <p>${task.tareadescription || 'Sin descripción'}</p>
+        <small>Fecha límite: ${dueDate}</small>
+      </div>
+    `;
+    fragment.appendChild(card);
+  });
+
+  taskList.appendChild(fragment);
+}
+
+function renderHistoryContent(entries) {
+  if (!historyContent) return;
+  historyContent.innerHTML = '';
+
+  const fragment = document.createDocumentFragment();
+  entries.forEach((entry) => {
+    const dateLabel = entry.created_at
+      ? new Date(entry.created_at).toLocaleString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+      : 'Fecha desconocida';
+
+    const card = document.createElement('div');
+    card.className = 'history-card';
+    card.innerHTML = `
+      <div class="history-card-header">
+        <span>${dateLabel}</span>
+      </div>
+      <div class="history-card-body">
+        <p>${entry.texmaterial || 'Sin contenido disponible para esta entrada.'}</p>
+      </div>
+    `;
+    fragment.appendChild(card);
+  });
+
+  historyContent.appendChild(fragment);
+}
+
+async function loadTasksForSubject(materialuser_id) {
+  if (!taskList) return;
+  if (!materialuser_id) {
+    setEmptyTaskState();
+    return;
+  }
+
+  taskList.innerHTML = '<div class="empty-state">Cargando tareas...</div>';
+
+  try {
+    const response = await fetch(`/api/tareapro?materialuser_id=${encodeURIComponent(materialuser_id)}`, {
+      method: 'GET',
+      credentials: 'include'
+    });
+    const data = await response.json();
+
+    if (!response.ok || !Array.isArray(data.tareas)) {
+      setEmptyTaskState('No se pudo cargar las tareas para esta materia.');
+      return;
+    }
+
+    if (!data.tareas.length) {
+      setEmptyTaskState('Aún no hay tareas para esta materia.');
+      return;
+    }
+
+    renderTaskList(data.tareas);
+  } catch (error) {
+    console.error('Error al cargar tareas:', error);
+    setEmptyTaskState('No se pudo cargar las tareas para esta materia.');
+  }
+}
+
+async function loadHistoryForSubject(materialuser_id) {
+  if (!historyContent) return;
+  if (!materialuser_id) {
+    setEmptyHistoryState();
+    return;
+  }
+
+  historyContent.innerHTML = '<div class="empty-state">Cargando historial...</div>';
+
+  try {
+    const response = await fetch(`/api/bookdigital/${encodeURIComponent(materialuser_id)}`, {
+      method: 'GET',
+      credentials: 'include'
+    });
+    const data = await response.json();
+
+    if (!response.ok || !Array.isArray(data.entries)) {
+      setEmptyHistoryState('No se pudo cargar el historial para esta materia.');
+      return;
+    }
+
+    if (!data.entries.length) {
+      setEmptyHistoryState('Aún no hay historial para esta materia.');
+      return;
+    }
+
+    renderHistoryContent(data.entries);
+  } catch (error) {
+    console.error('Error al cargar historial:', error);
+    setEmptyHistoryState('No se pudo cargar el historial para esta materia.');
+  }
+}
+
+async function loadUserSubjectsForTasks() {
+  if (!taskSubjectSelect && !historySubjectSelect) return;
+
+  try {
+    const response = await fetch('/api/materias', {
+      method: 'GET',
+      credentials: 'include'
+    });
+    const data = await response.json();
+
+    const subjects = Array.isArray(data.subjects) ? data.subjects : [];
+
+    const taskOptions = ['<option value="">Selecciona una materia</option>'];
+    const historyOptions = ['<option value="">Selecciona una materia</option>'];
+
+    if (!subjects.length) {
+      if (taskSubjectSelect) {
+        taskSubjectSelect.innerHTML = taskOptions.join('');
+        taskSubjectSelect.disabled = true;
+      }
+      if (historySubjectSelect) {
+        historySubjectSelect.innerHTML = historyOptions.join('');
+        historySubjectSelect.disabled = true;
+      }
+      if (taskSubjectEmpty) taskSubjectEmpty.style.display = 'block';
+      if (historySubjectEmpty) historySubjectEmpty.style.display = 'block';
+      setEmptyTaskState('Aún no tienes materias. Crea una materia para ver tareas.');
+      setEmptyHistoryState('Aún no tienes materias. Crea una materia para ver historial.');
+      return;
+    }
+
+    if (taskSubjectSelect) {
+      taskSubjectSelect.disabled = false;
+      taskSubjectSelect.innerHTML = taskOptions.join('');
+    }
+    if (historySubjectSelect) {
+      historySubjectSelect.disabled = false;
+      historySubjectSelect.innerHTML = historyOptions.join('');
+    }
+    if (taskSubjectEmpty) taskSubjectEmpty.style.display = 'none';
+    if (historySubjectEmpty) historySubjectEmpty.style.display = 'none';
+
+    subjects.forEach((subject) => {
+      const id = subject.id || subject.subject_id || '';
+      const label = subject.name || subject.admaterial || 'Materia';
+      const optionHtml = `<option value="${id}">${label}</option>`;
+      if (taskSubjectSelect) taskSubjectSelect.insertAdjacentHTML('beforeend', optionHtml);
+      if (historySubjectSelect) historySubjectSelect.insertAdjacentHTML('beforeend', optionHtml);
+    });
+
+    setEmptyTaskState();
+    setEmptyHistoryState();
+  } catch (error) {
+    console.error('Error al cargar materias para tareas:', error);
+    if (taskSubjectSelect) {
+      taskSubjectSelect.innerHTML = '<option value="">Selecciona una materia</option>';
+      taskSubjectSelect.disabled = true;
+    }
+    if (historySubjectSelect) {
+      historySubjectSelect.innerHTML = '<option value="">Selecciona una materia</option>';
+      historySubjectSelect.disabled = true;
+    }
+    if (taskSubjectEmpty) taskSubjectEmpty.style.display = 'block';
+    if (historySubjectEmpty) historySubjectEmpty.style.display = 'block';
+    setEmptyTaskState('No se pudieron cargar las materias.');
+    setEmptyHistoryState('No se pudieron cargar las materias.');
+  }
+}
+
+if (taskSubjectSelect) {
+  taskSubjectSelect.addEventListener('change', () => {
+    const materialuser_id = taskSubjectSelect.value;
+    if (materialuser_id) {
+      loadTasksForSubject(materialuser_id);
+    } else {
+      setEmptyTaskState();
+    }
+  });
+}
+
+if (historySubjectSelect) {
+  historySubjectSelect.addEventListener('change', () => {
+    const materialuser_id = historySubjectSelect.value;
+    if (materialuser_id) {
+      loadHistoryForSubject(materialuser_id);
+    } else {
+      setEmptyHistoryState();
+    }
+  });
+}
+
+if (tareaForm) {
+  tareaForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const taskTitle = tareaForm.querySelector('input[placeholder="Título de la tarea"]')?.value?.trim();
+    const taskDescription = tareaForm.querySelector('textarea[placeholder="Descripción de la tarea"]')?.value?.trim();
+    const taskDate = tareaForm.querySelector('input[type="date"]')?.value;
+    const materialuser_id = taskSubjectSelect?.value;
+
+    if (!taskTitle) {
+      Swal.fire({ icon: 'error', title: 'Falta información', text: 'Por favor ingresa el título de la tarea.', background: '#1a1435', color: '#fff', confirmButtonColor: '#8b5cf6' });
+      return;
+    }
+
+    if (!materialuser_id) {
+      Swal.fire({ icon: 'error', title: 'Selecciona materia', text: 'Debes seleccionar una materia para asignar la tarea.', background: '#1a1435', color: '#fff', confirmButtonColor: '#8b5cf6' });
       return;
     }
 
     try {
-      const response = await fetch('/api/materias/crear', {
+      const response = await fetch('/api/tareapro/crear', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ name, professor, schedule, description })
+        body: JSON.stringify({
+          tareaname: taskTitle,
+          tareadescription: taskDescription || null,
+          datetarea: taskDate || null,
+          materialuser_id
+        })
       });
       const data = await response.json();
+
       if (response.ok) {
-        Swal.fire({ icon: 'success', title: '¡Creada!', text: `Materia "${name}" creada exitosamente.`, background: '#1a1435', color: '#fff', confirmButtonColor: '#8b5cf6' });
-        materiaForm.reset();
-        closeModal('materiaModal');
+        Swal.fire({ icon: 'success', title: '¡Tarea creada!', text: `Tarea "${taskTitle}" creada para la materia seleccionada.`, background: '#1a1435', color: '#fff', confirmButtonColor: '#8b5cf6' });
+        tareaForm.reset();
+        setEmptyTaskState('Selecciona una materia para ver sus tareas.');
+        if (materialuser_id) {
+          loadTasksForSubject(materialuser_id);
+        }
       } else {
-        Swal.fire({ icon: 'error', title: 'Error', text: data.error || 'No se pudo crear la materia', background: '#1a1435', color: '#fff' });
+        Swal.fire({ icon: 'error', title: 'Error', text: data.error || 'No se pudo crear la tarea', background: '#1a1435', color: '#fff' });
       }
     } catch (error) {
-      console.error('Error al guardar materia:', error);
+      console.error('Error al crear tarea:', error);
+      Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo crear la tarea. Intenta de nuevo.', background: '#1a1435', color: '#fff' });
     }
   });
 }

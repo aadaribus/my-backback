@@ -67,11 +67,19 @@ export async function obtenerTareas(req, res) {
       return res.status(401).json({ error: 'No autenticado' });
     }
 
-    const { data, error } = await supabase
+    const localId = user.local_id || user.id;
+    const { materialuser_id } = req.query;
+
+    let query = supabase
       .from('tareapro')
       .select('*')
-      .eq('user_id', user.id)
-      .order('datetarea', { ascending: true });
+      .eq('user_id', user.id);
+
+    if (materialuser_id) {
+      query = query.eq('materialuser_id', materialuser_id);
+    }
+
+    const { data, error } = await query.order('datetarea', { ascending: true });
 
     if (error) {
       return res.status(500).json({ error: 'Error al obtener tareas' });
@@ -88,8 +96,7 @@ export async function obtenerTareas(req, res) {
   } catch (error) {
     console.error('[GET /api/tareapro]', error);
     res.status(500).json({ error: 'Error al obtener tareas' });
-  }
-}
+  }"}]}
 
 // ===== ENDPOINT: GET /api/tareapro/:id =====
 // Obtener una tarea específica

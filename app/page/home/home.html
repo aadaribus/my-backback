@@ -88,12 +88,14 @@
         <button class="modal-close" data-close="historialModal">&times;</button>
       </div>
       <div class="modal-body">
-        <p>Aquí aparecerá tu historial de actividades</p>
-        <ul class="history-list" style="margin: 20px 0; list-style: none; padding: 0;">
-          <li style="padding: 10px; border-bottom: 1px solid #ddd;">Materia agregada: Matemáticas</li>
-          <li style="padding: 10px; border-bottom: 1px solid #ddd;">Tarea creada: Ejercicio 1</li>
-          <li style="padding: 10px;">Grupo creado: Grupo de estudio</li>
-        </ul>
+        <p>Selecciona una materia para ver el historial y las tareas asociadas.</p>
+        <select id="historySubjectSelect" style="width:100%; padding:10px; margin-bottom:12px; border-radius:6px; border:1px solid #ccc;">
+          <option value="">Selecciona una materia</option>
+        </select>
+        <p class="help-text" id="historySubjectEmpty" style="display:none; margin: 0 0 12px; color: #f8fafc; font-size: 0.95rem;">Aún no tienes materias agregadas. Crea una materia para ver historial.</p>
+        <div id="historyContent" class="history-content" style="min-height:180px;">
+          <div class="empty-state">Selecciona una materia para ver su historial.</div>
+        </div>
         <div class="modal-buttons">
           <button type="button" class="btn-cancel" data-close="historialModal">Cerrar</button>
         </div>
@@ -127,14 +129,15 @@
         <h2>Tareas</h2>
         <button class="modal-close" data-close="tareasModal">&times;</button>
       </div>
-      <form class="modal-form">
+      <form class="modal-form" id="tareaForm">
         <input type="text" placeholder="Título de la tarea" required>
-        <select required>
+        <select id="taskSubjectSelect" required>
           <option value="">Selecciona una materia</option>
-          <option value="matematicas">Matemáticas</option>
-          <option value="fisica">Física</option>
-          <option value="quimica">Química</option>
         </select>
+        <p class="help-text" id="taskSubjectEmpty" style="display:none; margin: 0 0 12px; color: #f8fafc; font-size: 0.95rem;">Aún no tienes materias agregadas. Crea una materia antes de asignar tareas.</p>
+        <div id="taskList" class="task-list" style="margin-bottom:16px; min-height: 120px;">
+          <div class="empty-state">Selecciona una materia para ver sus tareas.</div>
+        </div>
         <textarea placeholder="Descripción de la tarea" required></textarea>
         <input type="date" required>
         <div class="modal-buttons">
