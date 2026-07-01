@@ -2,13 +2,12 @@
 // Controlador para manejar tareas (tareapro)
 
 import { supabase } from '../config/supabase.js';
-import { getUserFromToken } from '../utils/auth.js';
 
 // ===== ENDPOINT: POST /api/tareapro/crear =====
 // Crear una nueva tarea
 export async function crearTarea(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }
@@ -59,7 +58,7 @@ export async function crearTarea(req, res) {
 // Obtener todas las tareas del usuario
 export async function obtenerTareas(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }
@@ -91,7 +90,7 @@ export async function obtenerTareas(req, res) {
 // Obtener una tarea específica
 export async function obtenerTarea(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }
@@ -124,7 +123,7 @@ export async function obtenerTarea(req, res) {
 // Actualizar una tarea
 export async function actualizarTarea(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }
@@ -178,7 +177,7 @@ export async function actualizarTarea(req, res) {
 // Eliminar una tarea
 export async function eliminarTarea(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }

@@ -1,7 +1,6 @@
 // app/controllers/cuaderno.controller.js
 import { supabase } from '../config/supabase.js';
 import DOMPurify from 'isomorphic-dompurify';
-import { getUserFromToken } from '../utils/auth.js';
 
 // ===== FUNCIÓN: Crear cuaderno automáticamente (llamada desde agregar materia) =====
 export async function crearCuadernoAutomatico(subjectId, userId) {
@@ -33,7 +32,7 @@ export async function crearCuadernoAutomatico(subjectId, userId) {
 // Crear cuaderno manualmente (si es necesario, normalmente es automático)
 export async function crearCuaderno(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }
@@ -73,7 +72,7 @@ export async function crearCuaderno(req, res) {
 // Guardar entrada en el cuaderno
 export async function guardarEntrada(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }
@@ -140,7 +139,7 @@ export async function guardarEntrada(req, res) {
 // Obtener todas las entradas de un cuaderno
 export async function obtenerEntradas(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }
@@ -212,7 +211,7 @@ export async function obtenerEntradas(req, res) {
 // Obtener cuaderno por materia (o crearlo si no existe)
 export async function obtenerCuadernoMateria(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }
@@ -266,7 +265,7 @@ export async function obtenerCuadernoMateria(req, res) {
 // Actualizar una entrada
 export async function actualizarEntrada(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }
@@ -320,7 +319,7 @@ export async function actualizarEntrada(req, res) {
 // Eliminar una entrada
 export async function eliminarEntrada(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }
@@ -364,7 +363,7 @@ export async function eliminarEntrada(req, res) {
 // Subir archivo multimedia (normalmente se usa Data URL desde el frontend)
 export async function subirArchivo(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }

@@ -2,13 +2,12 @@
 // Controlador para manejar el perfil del usuario
 
 import { supabase } from '../config/supabase.js';
-import { getUserFromToken } from '../utils/auth.js';
 
 // ===== ENDPOINT: GET /api/profiledate =====
 // Obtener el perfil del usuario actual
 export async function obtenerPerfil(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }
@@ -70,7 +69,7 @@ export async function obtenerPerfil(req, res) {
 // Actualizar el perfil del usuario
 export async function actualizarPerfil(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }

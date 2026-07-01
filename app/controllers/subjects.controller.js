@@ -2,13 +2,12 @@
 // Controlador para manejar materias/asignaturas
 
 import { supabase } from '../config/supabase.js';
-import { getUserFromToken } from '../utils/auth.js';
 
 // ===== ENDPOINT: POST /api/materias/crear =====
 // Crear una nueva materia
 export async function crearMateria(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }
@@ -59,7 +58,7 @@ export async function crearMateria(req, res) {
 // Obtener todas las materias del usuario
 export async function obtenerMaterias(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }
@@ -96,7 +95,7 @@ export async function obtenerMaterias(req, res) {
 // Obtener una materia específica
 export async function obtenerMateria(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }
@@ -129,7 +128,7 @@ export async function obtenerMateria(req, res) {
 // Actualizar una materia
 export async function actualizarMateria(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }
@@ -186,7 +185,7 @@ export async function actualizarMateria(req, res) {
 // Eliminar una materia
 export async function eliminarMateria(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }

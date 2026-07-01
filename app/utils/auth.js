@@ -1,15 +1,7 @@
 import jsonwebtoken from 'jsonwebtoken';
 
 function getTokenFromRequest(req) {
-  if (!req || !req.headers) return null;
-  const cookieHeader = req.headers.cookie || '';
-  const cookieJWT = cookieHeader
-    .split(';')
-    .find((cookie) => cookie.trim().startsWith('jwt='));
-
-  if (!cookieJWT) return null;
-  const token = cookieJWT.split('=')[1];
-  return token || null;
+  return req?.cookies?.jwt || null;
 }
 
 export function getUserFromToken(req) {

@@ -2,13 +2,12 @@
 // Controlador para manejar grupos (gruppro)
 
 import { supabase } from '../config/supabase.js';
-import { getUserFromToken } from '../utils/auth.js';
 
 // ===== ENDPOINT: POST /api/gruppro/crear =====
 // Crear un nuevo grupo
 export async function crearGrupo(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }
@@ -56,7 +55,7 @@ export async function crearGrupo(req, res) {
 // Obtener todos los grupos del usuario
 export async function obtenerGrupos(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }
@@ -88,7 +87,7 @@ export async function obtenerGrupos(req, res) {
 // Obtener un grupo específico
 export async function obtenerGrupo(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }
@@ -121,7 +120,7 @@ export async function obtenerGrupo(req, res) {
 // Actualizar un grupo
 export async function actualizarGrupo(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }
@@ -173,7 +172,7 @@ export async function actualizarGrupo(req, res) {
 // Eliminar un grupo
 export async function eliminarGrupo(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }

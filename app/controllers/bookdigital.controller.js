@@ -3,13 +3,12 @@
 
 import { supabase } from '../config/supabase.js';
 import DOMPurify from 'isomorphic-dompurify';
-import { getUserFromToken } from '../utils/auth.js';
 
 // ===== ENDPOINT: POST /api/bookdigital/guardar =====
 // Guardar entrada en el cuaderno digital
 export async function guardarEntrada(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }
@@ -80,7 +79,7 @@ export async function guardarEntrada(req, res) {
 // Obtener todas las entradas del cuaderno del usuario
 export async function obtenerEntradas(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }
@@ -112,7 +111,7 @@ export async function obtenerEntradas(req, res) {
 // Obtener entradas de una materia específica
 export async function obtenerEntradasMateria(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }
@@ -156,7 +155,7 @@ export async function obtenerEntradasMateria(req, res) {
 // Actualizar una entrada
 export async function actualizarEntrada(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }
@@ -210,7 +209,7 @@ export async function actualizarEntrada(req, res) {
 // Eliminar una entrada
 export async function eliminarEntrada(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }
@@ -253,7 +252,7 @@ export async function eliminarEntrada(req, res) {
 // Obtener historial del cuaderno
 export async function obtenerHistorial(req, res) {
   try {
-    const user = getUserFromToken(req);
+    const user = req.user;
     if (!user) {
       return res.status(401).json({ error: 'No autenticado' });
     }
