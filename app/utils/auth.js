@@ -18,6 +18,22 @@ export function getUserFromToken(req) {
   }
 }
 
+export function getDatabaseUserId(user) {
+  if (!user) return null;
+
+  if (user.local_id !== undefined && user.local_id !== null) {
+    if (typeof user.local_id === 'number') return user.local_id;
+    if (typeof user.local_id === 'string' && /^\d+$/.test(user.local_id)) return Number(user.local_id);
+  }
+
+  if (user.id !== undefined && user.id !== null) {
+    if (typeof user.id === 'number') return user.id;
+    if (typeof user.id === 'string' && /^\d+$/.test(user.id)) return Number(user.id);
+  }
+
+  return null;
+}
+
 function isValidUUID(value) {
   return typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
 }

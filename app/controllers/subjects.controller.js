@@ -2,7 +2,7 @@
 // Controlador para manejar materias/asignaturas
 
 import { supabase } from '../config/supabase.js';
-import { buildStableUserId } from '../utils/auth.js';
+import { getDatabaseUserId } from '../utils/auth.js';
 
 // ===== ENDPOINT: POST /api/materias/crear =====
 // Crear una nueva materia
@@ -14,7 +14,7 @@ export async function crearMateria(req, res) {
     }
 
     const localId = user.local_id || user.id;
-    const resolvedUserId = buildStableUserId(localId);
+    const resolvedUserId = getDatabaseUserId(user);
     const { name, professor, schedule, description } = req.body;
 
     // Validar campos requeridos
@@ -76,7 +76,7 @@ export async function obtenerMaterias(req, res) {
     const { data, error } = await supabase
       .from('subjects')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('user_id', getDatabaseUserId(user))
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -115,7 +115,7 @@ export async function obtenerMateria(req, res) {
       .from('subjects')
       .select('*')
       .eq('id', subject_id)
-      .eq('user_id', user.id)
+      .eq('user_id', getDatabaseUserId(user))
       .single();
 
     if (error || !data) {

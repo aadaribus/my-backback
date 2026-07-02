@@ -2,7 +2,7 @@
 // Controlador para manejar el perfil del usuario
 
 import { supabase } from '../config/supabase.js';
-import { buildStableUserId } from '../utils/auth.js';
+import { getDatabaseUserId } from '../utils/auth.js';
 
 // ===== ENDPOINT: GET /api/profiledate =====
 // Obtener el perfil del usuario actual
@@ -14,6 +14,7 @@ export async function obtenerPerfil(req, res) {
     }
 
     const localId = user.local_id || user.id;
+    const resolvedUserId = getDatabaseUserId(user);
     console.log(`[Perfil] Obteniendo perfil del usuario ${user.id}`);
 
     // Obtener perfil
@@ -32,7 +33,6 @@ export async function obtenerPerfil(req, res) {
     // Si no existe perfil, crear uno vacío
     if (!data) {
       console.log(`[Perfil] Creando perfil vacío para usuario ${user.id}`);
-      const profileUserId = buildStableUserId(localId);
       const { data: newProfile, error: createError } = await supabase
         .from('profiledate')
         .insert({
@@ -84,6 +84,7 @@ export async function actualizarPerfil(req, res) {
     }
 
     const { namecomplet, usermail, userfone, useruni } = req.body;
+    const resolvedUserId = getDatabaseUserId(user);
 
     console.log(`[Perfil] Actualizando perfil del usuario ${user.id}`);
 
@@ -117,7 +118,6 @@ export async function actualizarPerfil(req, res) {
       updateError = error;
     } else {
       // Crear perfil si no existe
-      const profileUserId = buildStableUserId(localId);
       const { data, error } = await supabase
         .from('profiledate')
         .insert({

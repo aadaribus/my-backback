@@ -2,18 +2,7 @@
 // Controlador para manejar materias/asignaturas (materialuser)
 
 import { supabase } from '../config/supabase.js';
-
-function getUserIdForSupabase(user) {
-  if (!user) return null;
-  if (user.id === undefined || user.id === null) return null;
-  if (typeof user.id === 'number') return user.id;
-  if (typeof user.id === 'string' && /^\d+$/.test(user.id)) return Number(user.id);
-  return user.id;
-}
-
-function getUserIdForQuery(user) {
-  return getUserIdForSupabase(user);
-}
+import { getDatabaseUserId } from '../utils/auth.js';
 
 // ===== ENDPOINT: POST /api/materialuser/crear =====
 // Crear una nueva materia
@@ -25,7 +14,7 @@ export async function crearMateria(req, res) {
     }
 
     const localId = user.local_id || user.id;
-    const resolvedUserId = getUserIdForQuery(user);
+    const resolvedUserId = getDatabaseUserId(user);
     if (!resolvedUserId || (typeof resolvedUserId === 'string' && !resolvedUserId.trim())) {
       return res.status(400).json({ error: 'No hay un identificador de usuario válido para guardar datos' });
     }
@@ -88,6 +77,7 @@ export async function obtenerMaterias(req, res) {
       return res.status(401).json({ error: 'No autenticado' });
     }
 
+    const localId = user.local_id || user.id;
     console.log(`[Materias] Obteniendo materias para usuario ${user.id}`);
 
     // Obtener todas las materias del usuario
@@ -125,13 +115,14 @@ export async function obtenerMateria(req, res) {
       return res.status(401).json({ error: 'No autenticado' });
     }
 
+    const localId = user.local_id || user.id;
     const { id } = req.params;
 
     const { data, error } = await supabase
       .from('materialuser')
       .select('*')
       .eq('id', id)
-      .eq('user_id', getUserIdForQuery(user))
+      .eq('user_id', getDatabaseUserId(user))
       .single();
 
     if (error || !data) {
@@ -161,6 +152,7 @@ export async function actualizarMateria(req, res) {
       return res.status(401).json({ error: 'No autenticado' });
     }
 
+    const localId = user.local_id || user.id;
     const { id } = req.params;
     const { admaterial, nameprof, horauser, descriptionmateria } = req.body;
 
@@ -218,6 +210,7 @@ export async function eliminarMateria(req, res) {
       return res.status(401).json({ error: 'No autenticado' });
     }
 
+    const localId = user.local_id || user.id;
     const { id } = req.params;
 
     // Verificar que la materia pertenece al usuario
