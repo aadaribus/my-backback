@@ -3,6 +3,7 @@
 
 import { supabase } from '../config/supabase.js';
 import { getDatabaseUserId } from '../utils/auth.js';
+import { createFallbackRecord, getFallbackRecord, listFallbackRecords, updateFallbackRecord, deleteFallbackRecord, isSchemaFallbackError } from '../utils/db-fallback.js';
 
 // ===== ENDPOINT: POST /api/materialuser/crear =====
 // Crear una nueva materia
@@ -28,39 +29,59 @@ export async function crearMateria(req, res) {
     console.log(`[Materias] Creando materia: ${admaterial} para usuario ${user.id}`);
 
     // Insertar materia en la BD
-    const { data, error } = await supabase
-      .from('materialuser')
-      .insert({
-        user_id: resolvedUserId,
-        admaterial: admaterial.trim(),
-        nameprof: nameprof || null,
-        horauser: horauser || null,
-        descriptionmateria: descriptionmateria || null,
-        created_at: new Date().toISOString()
-      })
-      .select();
+    try {
+      const { data, error } = await supabase
+        .from('materialuser')
+        .insert({
+          user_id: resolvedUserId,
+          admaterial: admaterial.trim(),
+          nameprof: nameprof || null,
+          horauser: horauser || null,
+          descriptionmateria: descriptionmateria || null,
+          created_at: new Date().toISOString()
+        })
+        .select();
 
-    if (error) {
-      console.error('[Materias] Error al crear:', error);
-      return res.status(500).json({
-        error: 'Error al crear la materia',
-        details: error.message,
-        user_id: resolvedUserId,
-        hint: 'La tabla Supabase materialuser espera un user_id compatible con el esquema actual. Revisa SUPABASE_FIX_UUID_COMPATIBILITY.sql.'
+      if (error) {
+        if (isSchemaFallbackError(error)) {
+          const fallbackMaterial = createFallbackRecord('materialuser', resolvedUserId, {
+            user_id: resolvedUserId,
+            admaterial: admaterial.trim(),
+            nameprof: nameprof || null,
+            horauser: horauser || null,
+            descriptionmateria: descriptionmateria || null
+          });
+          return res.status(201).json({
+            success: true,
+            subject_id: fallbackMaterial.id,
+            material: { ...fallbackMaterial, local_id: localId },
+            message: `Materia "${admaterial}" creada exitosamente (modo local)`
+          });
+        }
+        console.error('[Materias] Error al crear:', error);
+        return res.status(500).json({
+          error: 'Error al crear la materia',
+          details: error.message,
+          user_id: resolvedUserId,
+          hint: 'La tabla Supabase materialuser espera un user_id compatible con el esquema actual. Revisa SUPABASE_FIX_UUID_COMPATIBILITY.sql.'
+        });
+      }
+
+      console.log(`[Materias] ✅ Materia creada: ${data[0].id}`);
+
+      return res.status(201).json({
+        success: true,
+        subject_id: data[0].id,
+        material: {
+          ...data[0],
+          local_id: localId
+        },
+        message: `Materia "${admaterial}" creada exitosamente`
       });
+    } catch (error) {
+      console.error('[POST /api/materialuser/crear]', error);
+      return res.status(500).json({ error: 'Error al crear materia', details: error.message });
     }
-
-    console.log(`[Materias] ✅ Materia creada: ${data[0].id}`);
-
-    res.status(201).json({
-      success: true,
-      subject_id: data[0].id,
-      material: {
-        ...data[0],
-        local_id: localId
-      },
-      message: `Materia "${admaterial}" creada exitosamente`
-    });
 
   } catch (error) {
     console.error('[POST /api/materialuser/crear]', error);
@@ -80,21 +101,25 @@ export async function obtenerMaterias(req, res) {
     const localId = user.local_id || user.id;
     console.log(`[Materias] Obteniendo materias para usuario ${user.id}`);
 
-    // Obtener todas las materias del usuario
+    const resolvedUserId = getDatabaseUserId(user);
     const { data, error } = await supabase
       .from('materialuser')
       .select('*')
-      .eq('user_id', getUserIdForQuery(user))
+      .eq('user_id', resolvedUserId)
       .order('created_at', { ascending: false });
 
     if (error) {
+      if (isSchemaFallbackError(error)) {
+        const fallbackMaterials = listFallbackRecords('materialuser', (material) => material.user_id === resolvedUserId);
+        return res.json({ success: true, materiales: fallbackMaterials || [], local_id: localId, source: 'fallback' });
+      }
       console.error('[Materias] Error al obtener:', error);
       return res.status(500).json({ error: 'Error al obtener materias', details: error.message });
     }
 
     console.log(`[Materias] ✅ Se obtuvieron ${data.length} materias`);
 
-    res.json({
+    return res.json({
       success: true,
       materiales: data || [],
       local_id: localId
@@ -118,14 +143,25 @@ export async function obtenerMateria(req, res) {
     const localId = user.local_id || user.id;
     const { id } = req.params;
 
+    const resolvedUserId = getDatabaseUserId(user);
     const { data, error } = await supabase
       .from('materialuser')
       .select('*')
       .eq('id', id)
-      .eq('user_id', getDatabaseUserId(user))
+      .eq('user_id', resolvedUserId)
       .single();
 
-    if (error || !data) {
+    if (error) {
+      if (isSchemaFallbackError(error)) {
+        const fallbackMaterial = getFallbackRecord('materialuser', (material) => material.id === id && material.user_id === resolvedUserId);
+        if (!fallbackMaterial) {
+          return res.status(404).json({ error: 'Materia no encontrada o acceso denegado' });
+        }
+        return res.json({ success: true, material: { ...fallbackMaterial, local_id: localId } });
+      }
+    }
+
+    if (!data) {
       return res.status(404).json({ error: 'Materia no encontrada o acceso denegado' });
     }
 
@@ -163,8 +199,19 @@ export async function actualizarMateria(req, res) {
       .eq('id', id)
       .single();
 
-    if (matError || !material || material.user_id !== getUserIdForQuery(user)) {
-      return res.status(403).json({ error: 'Acceso denegado' });
+    const resolvedUserId = getDatabaseUserId(user);
+    if (matError || !material || material.user_id !== resolvedUserId) {
+      const fallbackMaterial = getFallbackRecord('materialuser', (record) => record.id === id && record.user_id === resolvedUserId);
+      if (!fallbackMaterial) {
+        return res.status(403).json({ error: 'Acceso denegado' });
+      }
+      const updatedMaterial = updateFallbackRecord('materialuser', id, {
+        admaterial: admaterial || fallbackMaterial.admaterial,
+        nameprof: nameprof || null,
+        horauser: horauser || null,
+        descriptionmateria: descriptionmateria || null
+      });
+      return res.json({ success: true, material: { ...updatedMaterial, local_id: localId }, message: 'Materia actualizada exitosamente' });
     }
 
     const { data, error } = await supabase
@@ -181,6 +228,15 @@ export async function actualizarMateria(req, res) {
       .single();
 
     if (error) {
+      if (isSchemaFallbackError(error)) {
+        const fallbackMaterial = updateFallbackRecord('materialuser', id, {
+          admaterial: admaterial || material.admaterial,
+          nameprof: nameprof || null,
+          horauser: horauser || null,
+          descriptionmateria: descriptionmateria || null
+        });
+        return res.json({ success: true, material: { ...fallbackMaterial, local_id: localId }, message: 'Materia actualizada exitosamente' });
+      }
       return res.status(500).json({ error: 'Error al actualizar materia' });
     }
 
@@ -220,8 +276,14 @@ export async function eliminarMateria(req, res) {
       .eq('id', id)
       .single();
 
-    if (matError || !material || material.user_id !== getUserIdForQuery(user)) {
-      return res.status(403).json({ error: 'Acceso denegado' });
+    const resolvedUserId = getDatabaseUserId(user);
+    if (matError || !material || material.user_id !== resolvedUserId) {
+      const fallbackMaterial = getFallbackRecord('materialuser', (record) => record.id === id && record.user_id === resolvedUserId);
+      if (!fallbackMaterial) {
+        return res.status(403).json({ error: 'Acceso denegado' });
+      }
+      deleteFallbackRecord('materialuser', id);
+      return res.json({ success: true, local_id: localId, message: 'Materia eliminada exitosamente' });
     }
 
     const { error } = await supabase
@@ -230,6 +292,10 @@ export async function eliminarMateria(req, res) {
       .eq('id', id);
 
     if (error) {
+      if (isSchemaFallbackError(error)) {
+        deleteFallbackRecord('materialuser', id);
+        return res.json({ success: true, local_id: localId, message: 'Materia eliminada exitosamente' });
+      }
       return res.status(500).json({ error: 'Error al eliminar materia' });
     }
 

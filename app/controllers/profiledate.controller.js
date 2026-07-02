@@ -3,6 +3,7 @@
 
 import { supabase } from '../config/supabase.js';
 import { getDatabaseUserId } from '../utils/auth.js';
+import { createFallbackRecord, getFallbackRecord, updateFallbackRecord, isSchemaFallbackError } from '../utils/db-fallback.js';
 
 // ===== ENDPOINT: GET /api/profiledate =====
 // Obtener el perfil del usuario actual
@@ -21,41 +22,60 @@ export async function obtenerPerfil(req, res) {
     const { data, error } = await supabase
       .from('profiledate')
       .select('*')
-      .eq('user_id', user.id)
+      .eq('user_id', resolvedUserId)
       .single();
 
-    if (error && error.code !== 'PGRST116') {
-      // PGRST116 significa "not found"
+    if (error && error.code !== 'PGRST116' && !isSchemaFallbackError(error)) {
       console.error('[Perfil] Error al obtener:', error);
       return res.status(500).json({ error: 'Error al obtener perfil', details: error.message });
     }
 
-    // Si no existe perfil, crear uno vacío
     if (!data) {
-      console.log(`[Perfil] Creando perfil vacío para usuario ${user.id}`);
-      const { data: newProfile, error: createError } = await supabase
-        .from('profiledate')
-        .insert({
-          user_id: profileUserId,
-          namecomplet: null,
-          usermail: null,
-          userfone: null,
-          useruni: null
-        })
-        .select()
-        .single();
-
-      if (createError) {
-        return res.status(500).json({ error: 'Error al crear perfil', details: createError.message });
+      if (isSchemaFallbackError(error)) {
+        const fallbackProfile = getFallbackRecord('profiledate', (record) => record.user_id === resolvedUserId);
+        if (fallbackProfile) {
+          return res.json({ success: true, profile: { ...fallbackProfile, local_id: localId } });
+        }
       }
 
-      return res.json({
-        success: true,
-        profile: {
-          ...newProfile,
-          local_id: localId
+      console.log(`[Perfil] Creando perfil vacío para usuario ${user.id}`);
+      try {
+        const { data: newProfile, error: createError } = await supabase
+          .from('profiledate')
+          .insert({
+            user_id: resolvedUserId,
+            namecomplet: null,
+            usermail: null,
+            userfone: null,
+            useruni: null
+          })
+          .select()
+          .single();
+
+        if (createError) {
+          if (isSchemaFallbackError(createError)) {
+            const fallbackProfile = createFallbackRecord('profiledate', resolvedUserId, {
+              user_id: resolvedUserId,
+              namecomplet: null,
+              usermail: null,
+              userfone: null,
+              useruni: null
+            });
+            return res.json({ success: true, profile: { ...fallbackProfile, local_id: localId }, source: 'fallback' });
+          }
+          return res.status(500).json({ error: 'Error al crear perfil', details: createError.message });
         }
-      });
+
+        return res.json({
+          success: true,
+          profile: {
+            ...newProfile,
+            local_id: localId
+          }
+        });
+      } catch (createError) {
+        return res.status(500).json({ error: 'Error al crear perfil', details: createError.message });
+      }
     }
 
     console.log(`[Perfil] ✅ Perfil obtenido`);
@@ -89,10 +109,10 @@ export async function actualizarPerfil(req, res) {
     console.log(`[Perfil] Actualizando perfil del usuario ${user.id}`);
 
     // Verificar si existe el perfil
-    const { data: existingProfile } = await supabase
+    const { data: existingProfile, error: existingError } = await supabase
       .from('profiledate')
       .select('id')
-      .eq('user_id', user.id)
+      .eq('user_id', resolvedUserId)
       .single();
 
     let profileData;
@@ -100,7 +120,6 @@ export async function actualizarPerfil(req, res) {
     const localId = user.local_id || user.id;
 
     if (existingProfile) {
-      // Actualizar perfil existente
       const { data, error } = await supabase
         .from('profiledate')
         .update({
@@ -110,7 +129,7 @@ export async function actualizarPerfil(req, res) {
           useruni: useruni || null,
           updated_at: new Date().toISOString()
         })
-        .eq('user_id', user.id)
+        .eq('user_id', resolvedUserId)
         .select()
         .single();
 
@@ -121,7 +140,7 @@ export async function actualizarPerfil(req, res) {
       const { data, error } = await supabase
         .from('profiledate')
         .insert({
-          user_id: profileUserId,
+          user_id: resolvedUserId,
           namecomplet: namecomplet || null,
           usermail: usermail || null,
           userfone: userfone || null,
@@ -135,6 +154,24 @@ export async function actualizarPerfil(req, res) {
     }
 
     if (updateError) {
+      if (isSchemaFallbackError(updateError)) {
+        const fallbackProfile = existingProfile
+          ? updateFallbackRecord('profiledate', existingProfile.id, {
+              user_id: resolvedUserId,
+              namecomplet: namecomplet || null,
+              usermail: usermail || null,
+              userfone: userfone || null,
+              useruni: useruni || null
+            })
+          : createFallbackRecord('profiledate', resolvedUserId, {
+              user_id: resolvedUserId,
+              namecomplet: namecomplet || null,
+              usermail: usermail || null,
+              userfone: userfone || null,
+              useruni: useruni || null
+            });
+        return res.json({ success: true, profile: { ...fallbackProfile, local_id: localId }, source: 'fallback' });
+      }
       console.error('[Perfil] Error al actualizar:', updateError);
       return res.status(500).json({ error: 'Error al actualizar perfil', details: updateError.message });
     }
