@@ -36,6 +36,18 @@ function getSubjectId(subject) {
   return subject.id || subject.subject_id || null;
 }
 
+const notificationMessage = document.getElementById('notificationMessage');
+
+function showNotification(message, type = 'success') {
+  if (!notificationMessage) return;
+  notificationMessage.textContent = message;
+  notificationMessage.className = `notification-message show ${type}`;
+  window.clearTimeout(showNotification.timeoutId);
+  showNotification.timeoutId = window.setTimeout(() => {
+    notificationMessage.className = 'notification-message';
+  }, 3200);
+}
+
 function openSubjectModal() {
   subjectModal.classList.add('active');
 }
@@ -137,8 +149,14 @@ function renderSubjects(subjects) {
       const confirmDelete = confirm(`¿Eliminar la materia "${getSubjectDisplayName(subject)}"?`);
       if (!confirmDelete) return;
 
+      const subjectId = getSubjectId(subject);
+      if (!subjectId) {
+        alert('No se pudo determinar la materia para eliminar.');
+        return;
+      }
+
       try {
-        const response = await fetch(`/api/materias/${subject.id}`, {
+        const response = await fetch(`/api/materias/${subjectId}`, {
           method: 'DELETE',
           credentials: 'include'
         });
@@ -192,9 +210,10 @@ subjectForm.addEventListener('submit', async (event) => {
 
     closeSubjectModal();
     await loadSubjects();
+    showNotification(`Materia "${name}" guardada correctamente.`, 'success');
   } catch (error) {
     console.error('Error al crear materia:', error);
-    alert(error.message || 'Ocurrió un error al crear la materia.');
+    showNotification(error.message || 'Ocurrió un error al crear la materia.', 'error');
   }
 });
 
@@ -227,7 +246,12 @@ editSubjectForm.addEventListener('submit', async (event) => {
   };
 
   try {
-    const response = await fetch(`/api/materias/${currentSubject.id}`, {
+    const subjectId = getSubjectId(currentSubject);
+    if (!subjectId) {
+      throw new Error('No se pudo determinar la materia para actualizar.');
+    }
+
+    const response = await fetch(`/api/materias/${subjectId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
