@@ -57,7 +57,7 @@ form.addEventListener("submit", async (e) => {
       
       // Redirigir a home después de 500ms
       setTimeout(() => {
-        window.location.href = data.redirect || "/home-new";
+        window.location.href = data.redirect || "/home";
       }, 500);
     } else {
       // Login fallido
