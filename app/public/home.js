@@ -313,6 +313,72 @@ const taskList = document.getElementById('taskList');
 const historyContent = document.getElementById('historyContent');
 const tareaForm = document.getElementById('tareaForm');
 
+if (materiaForm) {
+  materiaForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const name = materiaForm.elements.name?.value?.trim();
+    const professor = materiaForm.elements.professor?.value?.trim();
+    const schedule = materiaForm.elements.schedule?.value?.trim();
+    const description = materiaForm.elements.description?.value?.trim();
+
+    if (!name) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Falta información',
+        text: 'Por favor ingresa el nombre de la materia.',
+        background: '#1a1435',
+        color: '#fff',
+        confirmButtonColor: '#8b5cf6'
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/materias/crear', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          name,
+          professor: professor || null,
+          schedule: schedule || null,
+          description: description || null
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || data.message || 'No se pudo crear la materia.');
+      }
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Materia creada',
+        text: `Materia "${name}" creada correctamente.`,
+        background: '#1a1435',
+        color: '#fff',
+        confirmButtonColor: '#8b5cf6'
+      });
+
+      materiaForm.reset();
+      closeModal('materiaModal');
+      await loadUserSubjectsForTasks();
+    } catch (error) {
+      console.error('Error al crear materia:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.message || 'No se pudo crear la materia. Intenta nuevamente.',
+        background: '#1a1435',
+        color: '#fff',
+        confirmButtonColor: '#8b5cf6'
+      });
+    }
+  });
+}
+
 function setEmptyTaskState(message = 'Selecciona una materia para ver sus tareas.') {
   if (!taskList) return;
   taskList.innerHTML = `<div class="empty-state">${message}</div>`;
